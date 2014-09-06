@@ -24,11 +24,11 @@ namespace LyncWPFApplication3
             _userStatus.Add(new UserStatus { StatusName = "Do not Disturb", Light = LIGHTS.YELLOW, LyncStatus = "Do Not Disturb", MutingMatters = false });
             _userStatus.Add(new UserStatus { StatusName = "Presenting", Light = LIGHTS.OFF, LyncStatus = "Presenting", MutingMatters = false });
 
-            _userStatus.Add(new UserStatus { StatusName = "In a conference call both muted", Light = LIGHTS.YELLOW, LyncStatus = "In a conference call", MutingMatters = true, AudioMuted=true, VideoMuted=true });
+            _userStatus.Add(new UserStatus { StatusName = "In a conference call both muted", Light = LIGHTS.YELLOW, LyncStatus = "In a conference call", MutingMatters = true, AudioMuted = true, VideoMuted = true });
             _userStatus.Add(new UserStatus { StatusName = "In a conference call muted but on camera", Light = LIGHTS.RED, LyncStatus = "In a conference call", MutingMatters = true, AudioMuted = true, VideoMuted = false });
             _userStatus.Add(new UserStatus { StatusName = "In a conference call mic on", Light = LIGHTS.RED, LyncStatus = "In a conference call", MutingMatters = true, AudioMuted = false, VideoMuted = true });
             _userStatus.Add(new UserStatus { StatusName = "In a conference call both on", Light = LIGHTS.RED, LyncStatus = "In a conference call", MutingMatters = true, AudioMuted = false, VideoMuted = false });
-            
+
             _userStatus.Add(new UserStatus { StatusName = "Busy", Light = LIGHTS.YELLOW, LyncStatus = "Busy", MutingMatters = false });
             _userStatus.Add(new UserStatus { StatusName = "In a meeting", Light = LIGHTS.YELLOW, LyncStatus = "In a meeting", MutingMatters = false });
             _userStatus.Add(new UserStatus { StatusName = "Be right back", Light = LIGHTS.GREEN, LyncStatus = "Be right back", MutingMatters = false });
@@ -92,7 +92,7 @@ namespace LyncWPFApplication3
         {
             get
             {
-                
+
                 switch (_currentLight)
                 {
                     case LIGHTS.RED:
@@ -101,7 +101,7 @@ namespace LyncWPFApplication3
                     case LIGHTS.YELLOW:
                         return "Yellow";
                         break;
-                    case LIGHTS.GREEN: 
+                    case LIGHTS.GREEN:
                         return "Green";
                         break;
                     case LIGHTS.OFF:
@@ -128,8 +128,8 @@ namespace LyncWPFApplication3
                 RaisePropertyChangedEvent("ComPort");
             }
         }
-        
-        public string[] ComPorts 
+
+        public string[] ComPorts
         {
             get
             {
@@ -164,6 +164,7 @@ namespace LyncWPFApplication3
             return true;
         }
 
-        public ICommand TestLight { get { return new RelayCommand(TestLightExecute, CanTestLightExecute); }}
+        public ICommand TestLight { get { return new RelayCommand(TestLightExecute, CanTestLightExecute); } }
 
+    }
 }
