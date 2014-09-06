@@ -7,6 +7,7 @@ using LyncLights;
 using System.ComponentModel;
 using System.Collections.ObjectModel;
 using System.IO.Ports;
+using System.Windows.Input;
 
 namespace LyncWPFApplication3
 {
@@ -20,13 +21,13 @@ namespace LyncWPFApplication3
         public void CreateDefaultStatuses()
         {
             _userStatus.Add(new UserStatus { StatusName = "Available", Light = LIGHTS.GREEN, LyncStatus = "Available", MutingMatters = false });
-            _userStatus.Add(new UserStatus { StatusName = "Do Not Disturb", Light = LIGHTS.YELLOW, LyncStatus = "Do Not Disturb", MutingMatters = false });
+            _userStatus.Add(new UserStatus { StatusName = "Do not Disturb", Light = LIGHTS.YELLOW, LyncStatus = "Do Not Disturb", MutingMatters = false });
             _userStatus.Add(new UserStatus { StatusName = "Presenting", Light = LIGHTS.OFF, LyncStatus = "Presenting", MutingMatters = false });
 
-            _userStatus.Add(new UserStatus { StatusName = "In a conference call a/v muted", Light = LIGHTS.YELLOW, LyncStatus = "In a conference call", MutingMatters = true, AudioMuted=true, VideoMuted=true });
+            _userStatus.Add(new UserStatus { StatusName = "In a conference call both muted", Light = LIGHTS.YELLOW, LyncStatus = "In a conference call", MutingMatters = true, AudioMuted=true, VideoMuted=true });
             _userStatus.Add(new UserStatus { StatusName = "In a conference call muted but on camera", Light = LIGHTS.RED, LyncStatus = "In a conference call", MutingMatters = true, AudioMuted = true, VideoMuted = false });
             _userStatus.Add(new UserStatus { StatusName = "In a conference call mic on", Light = LIGHTS.RED, LyncStatus = "In a conference call", MutingMatters = true, AudioMuted = false, VideoMuted = true });
-            _userStatus.Add(new UserStatus { StatusName = "In a conference call a/v both on", Light = LIGHTS.RED, LyncStatus = "In a conference call", MutingMatters = true, AudioMuted = false, VideoMuted = false });
+            _userStatus.Add(new UserStatus { StatusName = "In a conference call both on", Light = LIGHTS.RED, LyncStatus = "In a conference call", MutingMatters = true, AudioMuted = false, VideoMuted = false });
             
             _userStatus.Add(new UserStatus { StatusName = "Busy", Light = LIGHTS.YELLOW, LyncStatus = "Busy", MutingMatters = false });
             _userStatus.Add(new UserStatus { StatusName = "In a meeting", Light = LIGHTS.YELLOW, LyncStatus = "In a meeting", MutingMatters = false });
@@ -137,8 +138,6 @@ namespace LyncWPFApplication3
         }
 
 
-
-
         public string _comLinkStatus;
         public string comLinkStatus
         {
@@ -154,6 +153,17 @@ namespace LyncWPFApplication3
         public bool isLyncLinked { get; set; }
         public string lyncConnectionStatus { get; set; }
 
-    }
+        void TestLightExecute()
+        {
+
+        }
+
+        bool CanTestLightExecute()
+        {
+            // Add if connected
+            return true;
+        }
+
+        public ICommand TestLight { get { return new RelayCommand(TestLightExecute, CanTestLightExecute); }}
 
 }

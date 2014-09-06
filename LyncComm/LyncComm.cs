@@ -76,10 +76,12 @@ namespace LyncLights
             if (light != CurrentLight)
             {
 
+
                 if (SendMessage(((int)light).ToString())) CurrentLight = light;
                 else return false;
 
             }
+
             
             return true;
         }
