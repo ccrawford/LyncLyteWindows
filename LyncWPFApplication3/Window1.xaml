@@ -90,10 +90,10 @@
                 </ListView.ItemTemplate> 
                 
             </ListView>
-            
-        
 
-    <Button Content="Save Prefs" Click="Button_Click"  />
+
+
+                <Button Content="Save Prefs" Command="{Binding SavePrefsCommand}"  />
     
 
     </StackPanel>

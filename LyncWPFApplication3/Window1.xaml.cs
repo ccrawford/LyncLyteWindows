@@ -1,20 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using Microsoft.Lync.Model;
 using System.Diagnostics;
-using System.IO.Ports;
-using System.Timers;
 using System.Windows.Threading;
 using LyncLights;
 using Microsoft.Lync.Model.Conversation;
@@ -31,7 +21,6 @@ namespace LyncWPFApplication3
 
         private LyncClient _lyncClient;
         private Self _self;
-        private string _currentPresence;
         private DispatcherTimer _keepAlivetimer;
         private LyncComm comm;
 
@@ -41,32 +30,9 @@ namespace LyncWPFApplication3
             InitializeComponent();
             vm = (LinkStatusVM)linkData.DataContext;
 
-            LoadPrefs();
             InitializeComm();
             initializeLyncClient();
             intializeTimer();
-        }
-
-        private bool LoadPrefs()
-        {
-            
-            Serializer serializer = new Serializer();
-            SerializePrefs prefs = new SerializePrefs();
-
-            prefs = serializer.DeSerializeObject();
-            if (prefs != null && prefs.Statuses != null)
-            {
-                vm.UserStatuses = prefs.Statuses;
-            }
-            else vm.CreateDefaultStatuses();
-
-            if (prefs != null && prefs.ComPort != null)
-            {
-                vm.ComPort = prefs.ComPort;
-            }
-            else vm.ComPort = "COM5";
-
-            return true;
         }
 
         private void intializeTimer()
@@ -106,6 +72,8 @@ namespace LyncWPFApplication3
             CheckKeepAlive();
         }
 
+#region TestButtons
+        
         private void Button_Click_RED(object sender, RoutedEventArgs e)
         {
             //Test button.
@@ -127,6 +95,7 @@ namespace LyncWPFApplication3
             //Test button.
             comm.ActivateLight(LIGHTS.OFF);
         }
+#endregion
 
         //http://blogs.claritycon.com/blog/2011/04/lync-api-object-life-cycle/
         private void initializeLyncClient()
@@ -191,10 +160,7 @@ namespace LyncWPFApplication3
 
             _self = _lyncClient.Self;
 
-            var foo = _lyncClient.DeviceManager.ActiveAudioDevice;
-            
-
-            _currentPresence = _self.Contact.GetContactInformation(ContactInformationType.Activity).ToString();
+            string currentPresence = _self.Contact.GetContactInformation(ContactInformationType.Activity).ToString();
             
             _self.Contact.ContactInformationChanged += new EventHandler<ContactInformationChangedEventArgs>(Contact_InformationChanged);
 
@@ -202,16 +168,19 @@ namespace LyncWPFApplication3
             {
                 NewConversation(c);
             }
+
             // Watch conversations for mute feature
             _lyncClient.ConversationManager.ConversationAdded += ConversationManager_ConversationAdded;
 
             // Mute states have been set. Now you can update lights.
-            updateLights(_currentPresence);
+            updateLights(currentPresence);
 
         }
 
         void NewConversation(Conversation conversation)
         {
+            // For each new conversation, check the current state and watch for changes.
+
             var m_audioVideo = (AVModality)conversation.Modalities[ModalityTypes.AudioVideo];
             var m_properties = m_audioVideo.Properties;
 
@@ -223,21 +192,26 @@ namespace LyncWPFApplication3
             var videoState = m_audioVideo.VideoChannel.State;
             vm.isVideoOff = !(videoState == ChannelState.Send || videoState == ChannelState.SendReceive);
             
+            // Watch for camera changes
             m_audioVideo.AVModalityPropertyChanged += m_audioVideo_AVModalityPropertyChanged;
+            // Watch for mute changes
             m_audioVideo.VideoChannel.StateChanged += VideoChannel_StateChanged;
 
-            // string videoMuted = 
-            // var properties = m_properties.Keys;
         }
 
         void VideoChannel_StateChanged(object sender, ChannelStateChangedEventArgs e)
         {
-            // THIS IS A GOOD WAY TO CHECK IF THE CAMERA IS ON
+            // THIS IS A GOOD WAY TO CHECK IF THE CAMERA IS ON.
+            // However, need to check all the video channels when one gets turned off, another may also be on?
+
             Debug.WriteLine("Video State Changed: " + e.NewState);
+            
+            // Check if sending video by looking to see if current state is one of the sending states.
             vm.isVideoOff = !(e.NewState == ChannelState.Send || e.NewState == ChannelState.SendReceive);
 
-            _currentPresence = _self.Contact.GetContactInformation(ContactInformationType.Activity).ToString();
-            updateLights(_currentPresence);
+            // Get the presence...did we hang up? and send to the processor.
+            string currentPresence = _self.Contact.GetContactInformation(ContactInformationType.Activity).ToString();
+            updateLights(currentPresence);
         }
 
 
@@ -257,9 +231,10 @@ namespace LyncWPFApplication3
                 vm.isMicMuted = (bool)e.Value;
             }
 
-            _currentPresence = _self.Contact.GetContactInformation(ContactInformationType.Activity).ToString();
-            updateLights(_currentPresence);
+            string currentPresence = _self.Contact.GetContactInformation(ContactInformationType.Activity).ToString();
+            updateLights(currentPresence);
         }
+
 
       /*  private void ModalityStateChanged(object sender, ModalityStateChangedEventArgs e)
         {
@@ -284,8 +259,7 @@ namespace LyncWPFApplication3
                     {
                         string cur_activity;
                         string cur_availability;
-                        ContactAvailability av;
-
+        
                         if (_lyncClient.State == ClientState.SignedIn)
                         {
                             cur_activity = contact.GetContactInformation(ContactInformationType.Activity).ToString();
@@ -344,24 +318,8 @@ namespace LyncWPFApplication3
             System.Windows.Data.CollectionViewSource linkStatusVMViewSource = ((System.Windows.Data.CollectionViewSource)(this.FindResource("linkStatusVMViewSource")));
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            SavePrefs();
-        }
-
-        private void SavePrefs()
-        {
-            // Save Prefs
-            SerializePrefs prefs = new SerializePrefs();
-            prefs.Statuses = vm.UserStatuses;
-            prefs.ComPort = vm.ComPort;
-            Serializer serializer = new Serializer();
-            serializer.SerializeObject(prefs);
-        }
-
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            SavePrefs();
             comm.ActivateLight(LIGHTS.OFF);
         }
 

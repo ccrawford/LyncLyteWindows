@@ -15,7 +15,13 @@ namespace LyncWPFApplication3
     {
         public LinkStatusVM()
         {
+            LoadPrefs();
+        }
 
+        ~LinkStatusVM()
+        {
+            // Save the VM Prefs to a file on shutdown.
+            SavePrefs();
         }
 
         public void CreateDefaultStatuses()
@@ -39,6 +45,49 @@ namespace LyncWPFApplication3
             _userStatus.Add(new UserStatus { StatusName = "Default", Light = LIGHTS.OFF, LyncStatus = "Default", MutingMatters = false });
         }
 
+        private bool LoadPrefs()
+        {
+
+            Serializer serializer = new Serializer();
+            SerializePrefs prefs = new SerializePrefs();
+
+            prefs = serializer.DeSerializeObject();
+            if (prefs != null && prefs.Statuses != null)
+            {
+                UserStatuses = prefs.Statuses;
+            }
+            else CreateDefaultStatuses();
+
+            if (prefs != null && prefs.ComPort != null)
+            {
+                ComPort = prefs.ComPort;
+            }
+            else ComPort = "COM5";
+
+            return true;
+        }
+
+        private void SavePrefs()
+        {
+            // Save Prefs
+            SerializePrefs prefs = new SerializePrefs();
+            prefs.Statuses = UserStatuses;
+            prefs.ComPort = ComPort;
+            Serializer serializer = new Serializer();
+            serializer.SerializeObject(prefs);
+        }
+
+        void SavePrefsExecute()
+        {
+            SavePrefs();
+        }
+
+        bool CanSavePrefsExecute()
+        {
+            return true;
+        }
+
+        public ICommand SavePrefsCommand { get { return new RelayCommand(SavePrefsExecute, CanSavePrefsExecute); } }
 
 
         private bool _isMicMuted;
