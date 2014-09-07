@@ -21,55 +21,63 @@ namespace LyncWPFApplication3
 
         private LyncClient _lyncClient;
         private Self _self;
-        private DispatcherTimer _keepAlivetimer;
         private LyncComm comm;
 
 
         public Window1()
         {
             InitializeComponent();
+
+
             vm = (LinkStatusVM)linkData.DataContext;
 
             InitializeComm();
             initializeLyncClient();
-            intializeTimer();
         }
 
-        private void intializeTimer()
-        {
-            _keepAlivetimer = new DispatcherTimer();
-            _keepAlivetimer.Interval = TimeSpan.FromSeconds(20);
-            _keepAlivetimer.Start();
-            _keepAlivetimer.Tick += _keepAlivetimer_Tick;
-        }
-
-        void _keepAlivetimer_Tick(object sender, EventArgs e)
-        {
-            comm.CheckDeviceHandshake();
-            CheckKeepAlive();
-            
-            _keepAlivetimer.Start();
-        }
-
-        private void CheckKeepAlive()
-        {
-            //FIX this is a crappy way to do this. Should listen to an event instead.
-            if (comm.LinkSstatus)
-            {
-                vm.comLinkStatus = "Connected";
-            }
-            else
-            {
-                vm.comLinkStatus = "No connection";
-                this.Icon = new BitmapImage(new Uri("pack://application:,,,/Icons/x.png", UriKind.RelativeOrAbsolute));
-            }
-        }
 
         private void InitializeComm()
         {
             comm = new LyncComm(vm.ComPort);
-            comm.CheckDeviceHandshake();
-            CheckKeepAlive();
+            comm.CommStatusChanged +=comm_CommStatusChanged;
+            comm.PortsChanged += comm_PortsChanged;
+            ProcessComStatus(comm.CommunicationStatus);
+        }
+
+        void comm_PortsChanged(object sender, PortsChangedArgs e)
+        {
+            vm.comLinkStatus = "New port found";
+            vm.ComPorts = e.SerialPorts;
+        }
+
+
+
+        void comm_CommStatusChanged(object sender, CommStatusChanagedEventArgs e)
+        {
+            Debug.WriteLine("Comm stataus changed: " + e.NewStatus.ToString());
+            ProcessComStatus(e.NewStatus);
+        }
+        
+        void ProcessComStatus(COM_STATUS curStatus)
+        {
+            switch (curStatus)
+            {
+                case COM_STATUS.Connected:
+                    vm.comLinkStatus = "Connected";
+                    break;
+                case COM_STATUS.Disconnected:
+                    vm.comLinkStatus = "Disconnected";
+                    break;
+                case COM_STATUS.BadPort:
+                    vm.comLinkStatus = "Check Port selection";
+                    break;
+                case COM_STATUS.NotDetermined:
+                    vm.comLinkStatus = "Checking...";
+                    break;
+                default:
+                    vm.comLinkStatus = "Com Status unknown.";
+                    break;
+            }
         }
 
 #region TestButtons

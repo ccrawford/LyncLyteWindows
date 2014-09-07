@@ -146,22 +146,16 @@ namespace LyncWPFApplication3
                 {
                     case LIGHTS.RED:
                         return "Red";
-                        break;
                     case LIGHTS.YELLOW:
                         return "Yellow";
-                        break;
                     case LIGHTS.GREEN:
                         return "Green";
-                        break;
                     case LIGHTS.OFF:
                         return "Off";
-                        break;
                     case LIGHTS.STATUS:
                         return "Status";
-                        break;
                     default:
                         return "Not Set";
-                        break;
                 }
             }
         }
