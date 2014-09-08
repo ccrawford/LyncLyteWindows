@@ -5,18 +5,18 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:controls="clr-namespace:Microsoft.Lync.Controls;assembly=Microsoft.Lync.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:local="clr-namespace:LyncWPFApplication3" mc:Ignorable="d" x:Class="LyncWPFApplication3.Window1"
-    Title="LiteUp" Height="654.088" Width="246" Loaded="Window_Loaded" Closing="Window_Closing">
+    Title="LiteUp" Height="677.088" Width="246" Loaded="Window_Loaded" Closing="Window_Closing">
     <Window.Resources>
         <CollectionViewSource x:Key="linkStatusVMViewSource" d:DesignSource="{d:DesignInstance {x:Type local:LinkStatusVM}, CreateList=True}"/>
         <c:LinkStatusVM x:Key="vmW"/>
         <c:EnumBooleanConverter x:Key="enumConverter" />
     </Window.Resources>
-    
+
     <!--<Window.DataContext>
         <c:LinkStatusVM />
     </Window.DataContext>-->
     <Grid>
-        <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Margin="5,0">
+        <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Margin="5,5">
             <StackPanel Orientation="Horizontal" Margin="0,10,0,0" HorizontalAlignment="Center" VerticalAlignment="Top">
                 <controls:PresenceIndicator
 					x:Name="Presence"
@@ -31,8 +31,8 @@
                 />
             </StackPanel>
             <controls:MyPresenceChooser Margin="0,8,0,0"/>
-            
-            <StackPanel x:Name="linkData">
+
+            <StackPanel x:Name="linkData" Margin="5,0">
                 <StackPanel.DataContext>
                     <c:LinkStatusVM></c:LinkStatusVM>
                 </StackPanel.DataContext>
@@ -73,11 +73,11 @@
                     <ComboBox ItemsSource="{Binding ComPorts}" SelectedItem="{Binding ComPort}" Width="85" IsSynchronizedWithCurrentItem="True" Height="24"/>
                     <Label HorizontalAlignment="Left" Height="33" Margin="10,0,0,10"  VerticalAlignment="Bottom" Width="Auto" Content="{Binding comLinkStatus, Mode=OneWay}"/>
                 </StackPanel>
-                <ListView ItemsSource="{Binding UserStatuses}" Height="252">
-                <ListView.ItemTemplate>
-                    <DataTemplate>
-                        <StackPanel Orientation="Horizontal"  >
-                            <TextBlock Text="{Binding StatusName}" Width="120" TextWrapping="WrapWithOverflow" />
+                <ListView ItemsSource="{Binding UserStatuses}" Height="340">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal"  >
+                                <TextBlock Text="{Binding StatusName}" Width="120" TextWrapping="WrapWithOverflow" />
                                 <StackPanel>
                                     <RadioButton IsChecked="{Binding Path=Light, Converter={StaticResource enumConverter}, ConverterParameter=GREEN}">Green</RadioButton>
                                     <RadioButton IsChecked="{Binding Path=Light, Converter={StaticResource enumConverter}, ConverterParameter=YELLOW}">Yellow</RadioButton>
@@ -85,18 +85,18 @@
                                     <RadioButton IsChecked="{Binding Path=Light, Converter={StaticResource enumConverter}, ConverterParameter=OFF}">Off</RadioButton>
                                 </StackPanel>
 
-                        </StackPanel>
-                    </DataTemplate>
-                </ListView.ItemTemplate> 
-                
-            </ListView>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+
+                </ListView>
 
 
 
                 <Button Content="Save Prefs" Command="{Binding SavePrefsCommand}"  />
-    
 
-    </StackPanel>
+
+            </StackPanel>
         </StackPanel>
     </Grid>
 </Window>

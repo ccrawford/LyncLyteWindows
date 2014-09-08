@@ -21,6 +21,14 @@ namespace LyncLights
     public class LyncComm
     {
         private SerialPort _port;
+        private string _portName;
+        public string PortName
+        {
+            get { return _portName; }
+            set { _portName = value; }
+        }
+
+
         private static string[] _serialPorts;
         private static ManagementEventWatcher arrival;
         private static ManagementEventWatcher removal;
@@ -32,9 +40,6 @@ namespace LyncLights
 
         public LIGHTS CurrentLight = LIGHTS.OFF;
         private COM_STATUS _communicationStatus;
-
-        ManagementEventWatcher watcher;
-
 
         public COM_STATUS CommunicationStatus
         {
@@ -55,9 +60,7 @@ namespace LyncLights
         //Constructor
         public LyncComm(string port)
         {
-
-            // See if the port requested even exists in the system.
-            // CheckPortAvail(port);
+            _portName = port;
 
             keepAlive = new Timer();
             keepAlive.AutoReset = true;
@@ -67,22 +70,31 @@ namespace LyncLights
             _serialPorts = SerialPort.GetPortNames();
             MonitorDeviceChanges();
 
-            _port = new SerialPort(port, 9600);
-            _port.ReadTimeout = 1000;
-            _port.WriteTimeout = 1000;
+            SetCurrentPort(port);
 
             CheckDeviceHandshake();
 
-            /*
-            var query = new WqlEventQuery("Select * from Win32_DeviceChangeEvent WHERE EventType = 2 OR EventType = 3");
-            watcher = new ManagementEventWatcher();
-            watcher.EventArrived += watcher_EventArrived;
-            watcher.Query = query;
-            watcher.Start();
-            */
-
             keepAlive.Start();
 
+        }
+
+        private bool SetCurrentPort(string portName)
+        {
+            if (CheckPortAvail(portName))
+            {
+                PortName = portName;
+                if (_port != null && _port.IsOpen) _port.Close();
+                _port = new SerialPort(portName, 9600);
+                _port.ReadTimeout = 1000;
+                _port.WriteTimeout = 1000;
+                return true;
+            }
+            else return false;
+        }
+
+        ~LyncComm()
+        {
+            CleanUp();
         }
 
         private void MonitorDeviceChanges()
@@ -132,7 +144,7 @@ namespace LyncLights
         }
 
 
-        public static void CleanUp()
+        public void CleanUp()
         {
             arrival.Stop();
             removal.Stop();

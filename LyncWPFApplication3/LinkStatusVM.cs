@@ -64,6 +64,8 @@ namespace LyncWPFApplication3
             }
             else ComPort = "COM5";
 
+            _comPorts = new ObservableCollection<string>(SerialPort.GetPortNames());
+
             return true;
         }
 
@@ -172,11 +174,18 @@ namespace LyncWPFApplication3
             }
         }
 
-        public string[] ComPorts
+
+        private ObservableCollection<string> _comPorts = new ObservableCollection<String>();
+        public ObservableCollection<string> ComPorts
         {
             get
             {
-                return SerialPort.GetPortNames();
+                return _comPorts;
+            }
+            set
+            {
+                _comPorts = value;
+                RaisePropertyChangedEvent("ComPorts");
             }
         }
 

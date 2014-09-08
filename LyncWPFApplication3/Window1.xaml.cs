@@ -47,9 +47,8 @@ namespace LyncWPFApplication3
         void comm_PortsChanged(object sender, PortsChangedArgs e)
         {
             vm.comLinkStatus = "New port found";
-            vm.ComPorts = e.SerialPorts;
+            vm.ComPorts = new System.Collections.ObjectModel.ObservableCollection<string>(e.SerialPorts);
         }
-
 
 
         void comm_CommStatusChanged(object sender, CommStatusChanagedEventArgs e)
@@ -156,11 +155,6 @@ namespace LyncWPFApplication3
             }
         }
 
-/*        private void LyncClient_StateChanged(object sender, ClientStateChangedEventArgs e)
-        {
-            Debug.WriteLine("State Changed: " + e.NewState.ToString());
-        }
-*/
         void InitializeClient()
         {
             if (_lyncClient == null)
@@ -170,6 +164,7 @@ namespace LyncWPFApplication3
 
             string currentPresence = _self.Contact.GetContactInformation(ContactInformationType.Activity).ToString();
             
+            // Necessary to process manual contact state changes.
             _self.Contact.ContactInformationChanged += new EventHandler<ContactInformationChangedEventArgs>(Contact_InformationChanged);
 
             foreach(Conversation c in _lyncClient.ConversationManager.Conversations)
@@ -289,6 +284,8 @@ namespace LyncWPFApplication3
         private void updateLights(string presence)
         {
             Debug.WriteLine("UpdateLights: " + presence);
+            comm.PortName = vm.ComPort;
+
             var user_status = vm.UserStatuses.Where(s => s.LyncStatus == presence).FirstOrDefault();
             var user_statuses = vm.UserStatuses.Where(s => s.LyncStatus == presence);
             if (user_statuses.Count() > 1)
@@ -328,6 +325,7 @@ namespace LyncWPFApplication3
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
+            comm.CleanUp();
             comm.ActivateLight(LIGHTS.OFF);
         }
 
