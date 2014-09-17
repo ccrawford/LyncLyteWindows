@@ -27,9 +27,8 @@ namespace LyncWPFApplication3
         public Window1()
         {
             InitializeComponent();
-
-
             vm = (LinkStatusVM)linkData.DataContext;
+            base.DataContext = vm;
 
             InitializeComm();
             initializeLyncClient();
@@ -84,6 +83,7 @@ namespace LyncWPFApplication3
         private void Button_Click_RED(object sender, RoutedEventArgs e)
         {
             //Test button.
+            vm.iconName = "/Icons/red.png";
             comm.ActivateLight(LIGHTS.RED);
         }
         private void Button_Click_YELLOW(object sender, RoutedEventArgs e)
@@ -228,14 +228,14 @@ namespace LyncWPFApplication3
             //THIS IS A GOOD WAY TO MONITOR USE OF THE MUTE BUTTON.
             // Dont forget to change the lights when this changes.
 
-            System.Diagnostics.Debug.WriteLine("avModProp: " + e.Property + " : " + e.Value);
-            if(e.Property == ModalityProperty.AVModalityAudioCaptureMute)
+            if (e.Property == ModalityProperty.AVModalityAudioCaptureMute)
             {
-                vm.isMicMuted = (bool)e.Value;
-            }
+                System.Diagnostics.Debug.WriteLine("avModProp: " + e.Property + " : " + e.Value);
 
-            string currentPresence = _self.Contact.GetContactInformation(ContactInformationType.Activity).ToString();
-            updateLights(currentPresence);
+                vm.isMicMuted = (bool)e.Value;
+                string currentPresence = _self.Contact.GetContactInformation(ContactInformationType.Activity).ToString();
+                updateLights(currentPresence);
+            }
         }
 
 
@@ -297,7 +297,8 @@ namespace LyncWPFApplication3
 
             if (user_status != null)
             {
-                this.Icon = lightIcon[user_status.Light];
+                // BUG Can't do this here...changes the icon in the wrong thread
+                // this.Icon = lightIcon[user_status.Light];
                 comm.ActivateLight(user_status.Light);
                 vm.currentLight = user_status.Light;
             }
@@ -309,6 +310,7 @@ namespace LyncWPFApplication3
         }
 
         // Used to set the icon to the current light value.
+        /*
         private Dictionary<LIGHTS, BitmapImage> lightIcon = new Dictionary<LIGHTS, BitmapImage> 
         {
             { LIGHTS.RED, new BitmapImage(new Uri("pack://application:,,,/Icons/red.png", UriKind.RelativeOrAbsolute))},
@@ -316,12 +318,14 @@ namespace LyncWPFApplication3
             { LIGHTS.GREEN, new BitmapImage(new Uri("pack://application:,,,/Icons/green.png", UriKind.RelativeOrAbsolute))},
             { LIGHTS.OFF, new BitmapImage(new Uri("pack://application:,,,/Icons/off.png", UriKind.RelativeOrAbsolute))}
         };
+         * */
 
-        private void Window_Loaded(object sender, RoutedEventArgs e)
+       /* private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             // Set the window's view model.
-            System.Windows.Data.CollectionViewSource linkStatusVMViewSource = ((System.Windows.Data.CollectionViewSource)(this.FindResource("linkStatusVMViewSource")));
+       //     System.Windows.Data.CollectionViewSource linkStatusVMViewSource = ((System.Windows.Data.CollectionViewSource)(this.FindResource("linkStatusVMViewSource")));
         }
+        */
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {

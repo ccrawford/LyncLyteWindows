@@ -8,6 +8,8 @@ using System.ComponentModel;
 using System.Collections.ObjectModel;
 using System.IO.Ports;
 using System.Windows.Input;
+using System.Windows.Media.Imaging;
+using System.Windows.Media;
 
 namespace LyncWPFApplication3
 {
@@ -103,6 +105,51 @@ namespace LyncWPFApplication3
             }
         }
 
+        private Dictionary<LIGHTS, String> lightIcon = new Dictionary<LIGHTS, String> 
+        {
+            { LIGHTS.RED, "/Icons/red.png"},
+            { LIGHTS.YELLOW, "/Icons/yellow.png"},
+            { LIGHTS.GREEN, "/Icons/green.png"},
+            { LIGHTS.OFF, "/Icons/off.png"}
+        };
+
+        private String _curWinIcon;
+        public String curWinIcon
+        {
+            get { return _curWinIcon; }
+            set
+            {
+                _curWinIcon = value;
+                RaisePropertyChangedEvent("curWinIcon");
+            }
+        }
+
+        private string _iconName;
+        public string iconName
+        {
+            get { 
+                // return "Icons/red.png"; 
+                if (currentLight == 0) return "/Icons/off.png";
+                return lightIcon[(LIGHTS)currentLight];
+            }
+            set
+            {
+                _iconName = value;
+                RaisePropertyChangedEvent("iconName");
+            }
+        }
+
+        private string _appName;
+        public string appName
+        {
+            get { return "Lyte Up"; }
+            set
+            {
+                _appName = value;
+                RaisePropertyChangedEvent("appName");
+            }
+        }
+
         private bool _isVideoOff;
         public bool isVideoOff
         {
@@ -134,8 +181,11 @@ namespace LyncWPFApplication3
             set
             {
                 _currentLight = value;
+                curWinIcon = lightIcon[value];
+                // iconName = "Icons/green.png";
                 RaisePropertyChangedEvent("currentLight");
                 RaisePropertyChangedEvent("currentLightColor");
+                RaisePropertyChangedEvent("iconName");
             }
         }
 

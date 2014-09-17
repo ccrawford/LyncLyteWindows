@@ -12,10 +12,10 @@ namespace LyncLights
 {
     public enum LIGHTS
     {
-        RED = 5,
-        YELLOW = 6,
-        GREEN = 7,
-        OFF = 4,
+        RED = 6,
+        YELLOW = 5,
+        GREEN = 4,
+        OFF = 7,
         STATUS = 8
     }
     public class LyncComm

@@ -1,20 +1,18 @@
-﻿<Window
+﻿<Window x:Class="LyncWPFApplication3.Window1"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:c="clr-namespace:LyncWPFApplication3"
-    xmlns:l="clr-namespace:LyncLights"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:controls="clr-namespace:Microsoft.Lync.Controls;assembly=Microsoft.Lync.Controls"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:local="clr-namespace:LyncWPFApplication3" mc:Ignorable="d" x:Class="LyncWPFApplication3.Window1"
-    Title="LiteUp" Height="677.088" Width="246" Loaded="Window_Loaded" Closing="Window_Closing">
+
+    Title="{Binding Path=appName}" Height="690" Width="246" Closing="Window_Closing" Icon="{Binding iconName}">
+    
     <Window.Resources>
-        <CollectionViewSource x:Key="linkStatusVMViewSource" d:DesignSource="{d:DesignInstance {x:Type local:LinkStatusVM}, CreateList=True}"/>
-        <c:LinkStatusVM x:Key="vmW"/>
         <c:EnumBooleanConverter x:Key="enumConverter" />
     </Window.Resources>
 
-    <!--<Window.DataContext>
-        <c:LinkStatusVM />
-    </Window.DataContext>-->
+    <Window.DataContext>
+        <c:LinkStatusVM></c:LinkStatusVM>
+    </Window.DataContext>
     <Grid>
         <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Margin="5,5">
             <StackPanel Orientation="Horizontal" Margin="0,10,0,0" HorizontalAlignment="Center" VerticalAlignment="Top">
@@ -36,8 +34,8 @@
                 <StackPanel.DataContext>
                     <c:LinkStatusVM></c:LinkStatusVM>
                 </StackPanel.DataContext>
-                <Label Content="{Binding currentLightColor}" Margin="0,10,0,0" Height="27"/>
-
+                <Label Content="{Binding currentLightColor, Mode=OneWay}" Margin="0,10,0,0" Height="27"/>
+                <Image Height="20" Width="20" Source="{Binding iconName}"  />
                 <StackPanel Orientation="Horizontal" Margin="0,10,0,0" Height="Auto" >
                     <Grid HorizontalAlignment="Left" Margin="0,7,0,0" VerticalAlignment="Top">
                         <Grid.ColumnDefinitions>
@@ -97,6 +95,7 @@
 
 
             </StackPanel>
+
         </StackPanel>
     </Grid>
 </Window>
