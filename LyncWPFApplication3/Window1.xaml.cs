@@ -21,90 +21,17 @@ namespace LyncWPFApplication3
 
         private LyncClient _lyncClient;
         private Self _self;
-        private LyncComm comm;
-
 
         public Window1()
         {
             InitializeComponent();
-            vm = (LinkStatusVM)linkData.DataContext;
-            base.DataContext = vm;
+            vm = (LinkStatusVM)base.DataContext;
+            // base.DataContext = vm;
 
-            InitializeComm();
             initializeLyncClient();
         }
 
 
-        private void InitializeComm()
-        {
-            comm = new LyncComm(vm.ComPort);
-            comm.CommStatusChanged +=comm_CommStatusChanged;
-            comm.PortsChanged += comm_PortsChanged;
-            ProcessComStatus(comm.CommunicationStatus);
-        }
-
-        void comm_PortsChanged(object sender, PortsChangedArgs e)
-        {
-            vm.comLinkStatus = "New port found";
-            vm.ComPorts = new System.Collections.ObjectModel.ObservableCollection<string>(e.SerialPorts);
-        }
-
-
-        void comm_CommStatusChanged(object sender, CommStatusChanagedEventArgs e)
-        {
-            Debug.WriteLine("Comm stataus changed: " + e.NewStatus.ToString());
-            ProcessComStatus(e.NewStatus);
-        }
-        
-        void ProcessComStatus(COM_STATUS curStatus)
-        {
-            switch (curStatus)
-            {
-                case COM_STATUS.Connected:
-                    vm.comLinkStatus = "Connected";
-                    break;
-                case COM_STATUS.Disconnected:
-                    vm.comLinkStatus = "Disconnected";
-                    break;
-                case COM_STATUS.BadPort:
-                    vm.comLinkStatus = "Check Port selection";
-                    break;
-                case COM_STATUS.NotDetermined:
-                    vm.comLinkStatus = "Checking...";
-                    break;
-                default:
-                    vm.comLinkStatus = "Com Status unknown.";
-                    break;
-            }
-        }
-
-#region TestButtons
-        
-        private void Button_Click_RED(object sender, RoutedEventArgs e)
-        {
-            //Test button.
-            vm.iconName = "/Icons/red.png";
-            comm.ActivateLight(LIGHTS.RED);
-        }
-        private void Button_Click_YELLOW(object sender, RoutedEventArgs e)
-        {
-            //Test button.
-            comm.ActivateLight(LIGHTS.YELLOW);
-        }
-        private void Button_Click_GREEN(object sender, RoutedEventArgs e)
-        {
-            //Test button.
-            comm.ActivateLight(LIGHTS.GREEN);
-            // vm.UserStatuses.Add(new UserStatus { StatusName = "On Active Call", LyncStatus = "In Call", Light = LIGHTS.RED, AudioMuted = false, VideoMuted = false });
-        }
-        private void Button_Click_OFF(object sender, RoutedEventArgs e)
-        {
-            //Test button.
-            comm.ActivateLight(LIGHTS.OFF);
-        }
-#endregion
-
-        //http://blogs.claritycon.com/blog/2011/04/lync-api-object-life-cycle/
         private void initializeLyncClient()
         {
             try
@@ -238,18 +165,6 @@ namespace LyncWPFApplication3
             }
         }
 
-
-      /*  private void ModalityStateChanged(object sender, ModalityStateChangedEventArgs e)
-        {
-
-            Modality avM = (Modality)sender;
-            var properties = avM.Properties;
-            string bMuted = avM.Properties[ModalityProperty.AVModalityAudioCaptureMute].ToString();
-            System.Diagnostics.Debug.WriteLine("Modality State Change. Muted: " + bMuted);
-
-        } 
-        */
-
         private void Contact_InformationChanged(object sender, ContactInformationChangedEventArgs e)
         {
             // System.Diagnostics.Debug.WriteLine("Contact info changed");
@@ -280,63 +195,18 @@ namespace LyncWPFApplication3
 
                 }
         }
+        
 
         private void updateLights(string presence)
         {
-            Debug.WriteLine("UpdateLights: " + presence);
-            comm.PortName = vm.ComPort;
-
-            var user_status = vm.UserStatuses.Where(s => s.LyncStatus == presence).FirstOrDefault();
-            var user_statuses = vm.UserStatuses.Where(s => s.LyncStatus == presence);
-            if (user_statuses.Count() > 1)
-            {
-                //Check for muting condition
-                user_status = user_statuses.Where(s => s.AudioMuted == vm.isMicMuted && s.VideoMuted == vm.isVideoOff).FirstOrDefault();
-            }
-
-
-            if (user_status != null)
-            {
-                // BUG Can't do this here...changes the icon in the wrong thread
-                // this.Icon = lightIcon[user_status.Light];
-                comm.ActivateLight(user_status.Light);
-                vm.currentLight = user_status.Light;
-            }
-            else
-            {
-                vm.UserStatuses.Add(new UserStatus { LyncStatus = presence, StatusName = presence, Light= LIGHTS.OFF, AudioMuted=false, VideoMuted=false });
-            }
-
+            vm.PresenceToLight(presence);
         }
-
-        // Used to set the icon to the current light value.
-        /*
-        private Dictionary<LIGHTS, BitmapImage> lightIcon = new Dictionary<LIGHTS, BitmapImage> 
-        {
-            { LIGHTS.RED, new BitmapImage(new Uri("pack://application:,,,/Icons/red.png", UriKind.RelativeOrAbsolute))},
-            { LIGHTS.YELLOW, new BitmapImage(new Uri("pack://application:,,,/Icons/yellow.png", UriKind.RelativeOrAbsolute))},
-            { LIGHTS.GREEN, new BitmapImage(new Uri("pack://application:,,,/Icons/green.png", UriKind.RelativeOrAbsolute))},
-            { LIGHTS.OFF, new BitmapImage(new Uri("pack://application:,,,/Icons/off.png", UriKind.RelativeOrAbsolute))}
-        };
-         * */
-
-       /* private void Window_Loaded(object sender, RoutedEventArgs e)
-        {
-            // Set the window's view model.
-       //     System.Windows.Data.CollectionViewSource linkStatusVMViewSource = ((System.Windows.Data.CollectionViewSource)(this.FindResource("linkStatusVMViewSource")));
-        }
-        */
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            comm.CleanUp();
-            comm.ActivateLight(LIGHTS.OFF);
+            vm.CleanUp();
         }
 
-
     }
-        
-    
-
 
 }

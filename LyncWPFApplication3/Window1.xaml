@@ -4,7 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:controls="clr-namespace:Microsoft.Lync.Controls;assembly=Microsoft.Lync.Controls"
 
-    Title="{Binding Path=appName}" Height="690" Width="246" Closing="Window_Closing" Icon="{Binding iconName}">
+    Title="{Binding Path=appName}" Height="690" Width="246" Closing="Window_Closing" Icon="{Binding iconName}" >
     
     <Window.Resources>
         <c:EnumBooleanConverter x:Key="enumConverter" />
@@ -31,9 +31,7 @@
             <controls:MyPresenceChooser Margin="0,8,0,0"/>
 
             <StackPanel x:Name="linkData" Margin="5,0">
-                <StackPanel.DataContext>
-                    <c:LinkStatusVM></c:LinkStatusVM>
-                </StackPanel.DataContext>
+                
                 <Label Content="{Binding currentLightColor, Mode=OneWay}" Margin="0,10,0,0" Height="27"/>
                 <Image Height="20" Width="20" Source="{Binding iconName}"  />
                 <StackPanel Orientation="Horizontal" Margin="0,10,0,0" Height="Auto" >
@@ -62,10 +60,10 @@
                 </StackPanel>
                 <!--http://stackoverflow.com/questions/397556/how-to-bind-radiobuttons-to-an-enum-->
                 <StackPanel Orientation="Horizontal" Margin="0,10,0,0" Height="36">
-                    <Button Content="Red" HorizontalAlignment="Left" Width="50" Margin="0,10,0,0" VerticalAlignment="Top" Click="Button_Click_RED"/>
-                    <Button Content="Yellow" HorizontalAlignment="Left" Width="50" Margin="0,10,0,0" VerticalAlignment="Top" Click="Button_Click_YELLOW"/>
-                    <Button Content="Green" HorizontalAlignment="Left" Width="50" Margin="0,10,0,0" VerticalAlignment="Top" Click="Button_Click_GREEN"/>
-                    <Button Content="Off" HorizontalAlignment="Left" Width="50" Margin="0,10,0,0" VerticalAlignment="Top" Click="Button_Click_OFF"/>
+                    <Button Content="Red" HorizontalAlignment="Left" Width="50" Margin="0,10,0,0" VerticalAlignment="Top" Command="{Binding Path=TestLight}" CommandParameter="RED"/>
+                    <Button Content="Yellow" HorizontalAlignment="Left" Width="50" Margin="0,10,0,0" VerticalAlignment="Top" Command="{Binding Path=TestLight}" CommandParameter="YELLOW"/>
+                    <Button Content="Green" HorizontalAlignment="Left" Width="50" Margin="0,10,0,0" VerticalAlignment="Top" Command="{Binding Path=TestLight}" CommandParameter="GREEN"/>
+                    <Button Content="Off" HorizontalAlignment="Left" Width="50" Margin="0,10,0,0" VerticalAlignment="Top" Command="{Binding Path=TestLight}" CommandParameter="OFF"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal">
                     <ComboBox ItemsSource="{Binding ComPorts}" SelectedItem="{Binding ComPort}" Width="85" IsSynchronizedWithCurrentItem="True" Height="24"/>

@@ -97,6 +97,8 @@ namespace LyncLights
             CleanUp();
         }
 
+        // From http://stackoverflow.com/questions/4199083/detect-serial-port-insertion-removal 
+
         private void MonitorDeviceChanges()
         {
             try
@@ -146,6 +148,7 @@ namespace LyncLights
 
         public void CleanUp()
         {
+            if (_port.IsOpen) _port.Close();
             arrival.Stop();
             removal.Stop();
         }
@@ -248,8 +251,9 @@ namespace LyncLights
                 if (!_port.IsOpen) _port.Open();
                 _port.Write(message);
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                Debug.WriteLine("Com port problem: " + e.Message);
                 CommunicationStatus = COM_STATUS.Disconnected;
                 return false;
             }

@@ -4,56 +4,45 @@ using System.Windows.Input;
 
 namespace LyncWPFApplication3
 {
+
     public class RelayCommand : ICommand
     {
-        #region Members
-        readonly Func<Boolean> _canExecute;
-        readonly Action _execute;
+        #region Fields
+        readonly Action<object> _execute;
+        readonly Predicate<object> _canExecute;
         #endregion
 
+        // Fields 
         #region Constructors
-        public RelayCommand(Action execute)
+        public RelayCommand(Action<object> execute)
             : this(execute, null)
-        {
-        }
+        { }
 
-        public RelayCommand(Action execute, Func<Boolean> canExecute)
+        public RelayCommand(Action<object> execute, Predicate<object> canExecute)
         {
-            if (execute == null)
-                throw new ArgumentNullException("execute");
+            if (execute == null) throw new ArgumentNullException("execute");
             _execute = execute;
             _canExecute = canExecute;
         }
         #endregion
-
+        // Constructors 
         #region ICommand Members
-        public event EventHandler CanExecuteChanged
-        {
-            add
-            {
-
-                if (_canExecute != null)
-                    CommandManager.RequerySuggested += value;
-            }
-            remove
-            {
-
-                if (_canExecute != null)
-                    CommandManager.RequerySuggested -= value;
-            }
-        }
-
         [DebuggerStepThrough]
-        public Boolean CanExecute(Object parameter)
+        public bool CanExecute(object parameter)
         {
-            return _canExecute == null ? true : _canExecute();
+            return _canExecute == null ? true : _canExecute(parameter);
         }
 
-        public void Execute(Object parameter)
-        {
-            _execute();
+        public event EventHandler CanExecuteChanged 
+        { 
+            add { CommandManager.RequerySuggested += value; } 
+            remove { CommandManager.RequerySuggested -= value; } 
         }
-        #endregion
+        public void Execute(object parameter) 
+        { 
+            _execute(parameter); 
+        }
+        #endregion // ICommand Members
     }
 
 }

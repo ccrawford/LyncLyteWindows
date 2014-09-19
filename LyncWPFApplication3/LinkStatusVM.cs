@@ -10,20 +10,78 @@ using System.IO.Ports;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using System.Windows.Media;
+using System.Diagnostics;
+using System.Windows;
 
 namespace LyncWPFApplication3
 {
     class LinkStatusVM : ObservableObject
     {
+
+        private LyncComm _comm;
+
         public LinkStatusVM()
         {
             LoadPrefs();
+
+            // Prevent the xaml designer from grabbing the com port.
+            DependencyObject dep = new DependencyObject();
+            if (!DesignerProperties.GetIsInDesignMode(dep))
+            {
+                InitializeComm();
+            }
         }
 
-        ~LinkStatusVM()
+        public void CleanUp()
         {
             // Save the VM Prefs to a file on shutdown.
             SavePrefs();
+            _comm.ActivateLight(LIGHTS.OFF);
+            _comm.CleanUp();
+        }
+        
+
+        private void InitializeComm()
+        {
+            _comm = new LyncComm(ComPort);
+            _comm.CommStatusChanged += comm_CommStatusChanged;
+            _comm.PortsChanged += comm_PortsChanged;
+            ProcessComStatus(_comm.CommunicationStatus);
+        }
+
+        void comm_PortsChanged(object sender, PortsChangedArgs e)
+        {
+            comLinkStatus = "New port found";
+            ComPorts = new System.Collections.ObjectModel.ObservableCollection<string>(e.SerialPorts);
+        }
+
+
+        void comm_CommStatusChanged(object sender, CommStatusChanagedEventArgs e)
+        {
+            Debug.WriteLine("Comm stataus changed: " + e.NewStatus.ToString());
+            ProcessComStatus(e.NewStatus);
+        }
+
+        void ProcessComStatus(COM_STATUS curStatus)
+        {
+            switch (curStatus)
+            {
+                case COM_STATUS.Connected:
+                    comLinkStatus = "Connected";
+                    break;
+                case COM_STATUS.Disconnected:
+                    comLinkStatus = "Disconnected";
+                    break;
+                case COM_STATUS.BadPort:
+                    comLinkStatus = "Check Port selection";
+                    break;
+                case COM_STATUS.NotDetermined:
+                    comLinkStatus = "Checking...";
+                    break;
+                default:
+                    comLinkStatus = "Com Status unknown.";
+                    break;
+            }
         }
 
         public void CreateDefaultStatuses()
@@ -91,8 +149,6 @@ namespace LyncWPFApplication3
             return true;
         }
 
-        public ICommand SavePrefsCommand { get { return new RelayCommand(SavePrefsExecute, CanSavePrefsExecute); } }
-
 
         private bool _isMicMuted;
         public bool isMicMuted
@@ -127,7 +183,8 @@ namespace LyncWPFApplication3
         private string _iconName;
         public string iconName
         {
-            get { 
+            get
+            {
                 // return "Icons/red.png"; 
                 if (currentLight == 0) return "/Icons/off.png";
                 return lightIcon[(LIGHTS)currentLight];
@@ -139,15 +196,9 @@ namespace LyncWPFApplication3
             }
         }
 
-        private string _appName;
         public string appName
         {
             get { return "Lyte Up"; }
-            set
-            {
-                _appName = value;
-                RaisePropertyChangedEvent("appName");
-            }
         }
 
         private bool _isVideoOff;
@@ -172,14 +223,14 @@ namespace LyncWPFApplication3
             }
         }
 
-        public string currentLyncStatus { get; set; }
-
         private LIGHTS _currentLight;
         public LIGHTS currentLight
         {
             get { return _currentLight; }
             set
             {
+                _comm.ActivateLight(value);
+
                 _currentLight = value;
                 curWinIcon = lightIcon[value];
                 // iconName = "Icons/green.png";
@@ -212,6 +263,27 @@ namespace LyncWPFApplication3
             }
         }
 
+        public void PresenceToLight(string presence)
+        {
+            var user_status = UserStatuses.Where(s => s.LyncStatus == presence).FirstOrDefault();
+            var user_statuses = UserStatuses.Where(s => s.LyncStatus == presence);
+            if (user_statuses.Count() > 1)
+            {
+                //Check for muting condition
+                user_status = user_statuses.Where(s => s.AudioMuted == isMicMuted && s.VideoMuted == isVideoOff).FirstOrDefault();
+            }
+
+
+            if (user_status != null)
+            {
+                currentLight = user_status.Light;
+            }
+            else
+            {
+                //New Status found. Add it to the list.
+                UserStatuses.Add(new UserStatus { LyncStatus = presence, StatusName = presence, Light = LIGHTS.OFF, AudioMuted = false, VideoMuted = false });
+            }
+        }
 
         private string _comPort { get; set; }
         public string ComPort
@@ -251,13 +323,12 @@ namespace LyncWPFApplication3
             }
         }
 
-        public bool isComLinked { get; set; }
-        public bool isLyncLinked { get; set; }
-        public string lyncConnectionStatus { get; set; }
 
-        void TestLightExecute()
+        void TestLightExecute(object state)
         {
-
+            LIGHTS newLight;
+            if (state == null) return;
+            if (Enum.TryParse(state.ToString(), out newLight)) currentLight = newLight;
         }
 
         bool CanTestLightExecute()
@@ -266,7 +337,19 @@ namespace LyncWPFApplication3
             return true;
         }
 
-        public ICommand TestLight { get { return new RelayCommand(TestLightExecute, CanTestLightExecute); } }
+        private RelayCommand _TestLight;
+        public RelayCommand TestLight
+        {
+            get
+            {
+                if (_TestLight == null)
+                {
+                    _TestLight = new RelayCommand(TestLightExecute);
+                }
+                return _TestLight;
+            }
+        }
+            
 
     }
 }
