@@ -19,18 +19,40 @@ namespace LyncWPFApplication3
     {
 
         private LyncComm _comm;
+        private LyncInterface _lync;
 
         public LinkStatusVM()
         {
+            // Set the user's preferences from the pref file.
             LoadPrefs();
 
+            _lync = new LyncInterface();
+            _lync.PropertyChanged += _lync_PropertyChanged;
+            
             // Prevent the xaml designer from grabbing the com port.
             DependencyObject dep = new DependencyObject();
             if (!DesignerProperties.GetIsInDesignMode(dep))
             {
                 InitializeComm();
+                PresenceToLight(_lync.curPresence);
+            }
+
+
+        }
+
+        // Watch for changes in the Lync status and update lights as necessary.
+        void _lync_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            // There must be a better way to do this...
+            if (e.PropertyName == "curPresence" || e.PropertyName == "isMicMuted" || e.PropertyName == "isVideoOff" )
+            {
+                isMicMuted = _lync.isMicMuted;
+                isVideoOff = _lync.isVideoOff;
+                PresenceToLight(_lync.curPresence);
             }
         }
+
+
 
         public void CleanUp()
         {
@@ -153,7 +175,11 @@ namespace LyncWPFApplication3
         private bool _isMicMuted;
         public bool isMicMuted
         {
-            get { return _isMicMuted; }
+            get
+            {
+                return _lync.isMicMuted; 
+                //return _isMicMuted; 
+            }
             set
             {
                 _isMicMuted = value;
@@ -204,7 +230,10 @@ namespace LyncWPFApplication3
         private bool _isVideoOff;
         public bool isVideoOff
         {
-            get { return _isVideoOff; }
+            get {
+                return _lync.isVideoOff;
+                // return _isVideoOff; 
+            }
             set
             {
                 _isVideoOff = value;
