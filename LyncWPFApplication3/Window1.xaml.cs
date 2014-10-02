@@ -17,13 +17,13 @@ namespace LyncWPFApplication3
     /// </summary>
     public partial class Window1 : Window
     {
-        LinkStatusVM vm;
+        LyncVM vm;
 
 
         public Window1()
         {
             InitializeComponent();
-            vm = (LinkStatusVM)base.DataContext;
+            vm = (LyncVM)base.DataContext;
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)

@@ -15,40 +15,46 @@ using System.Windows;
 
 namespace LyncWPFApplication3
 {
-    class LinkStatusVM : ObservableObject
+    class LyncVM : ObservableObject
     {
 
-        private LyncComm _comm;
+        // private LyncComm _comm;
         private LyncUSB _usb;
         private LyncInterface _lync;
 
-        public LinkStatusVM()
+        public LyncVM()
         {
             // Set the user's preferences from the pref file.
             LoadPrefs();
 
             _usb = new LyncUSB();
-            
+            _usb.UsbTransmitterChangeNotifier += _usb_UsbTransmitterChangeNotifier;
 
             _lync = new LyncInterface();
             _lync.PropertyChanged += _lync_PropertyChanged;
-            
+
             // Prevent the xaml designer from grabbing the com port.
             DependencyObject dep = new DependencyObject();
             if (!DesignerProperties.GetIsInDesignMode(dep))
             {
-                InitializeComm();
                 PresenceToLight(_lync.curPresence);
             }
 
 
         }
 
+        void _usb_UsbTransmitterChangeNotifier(object sender, EventArgs e)
+        {
+            Debug.WriteLine("USB status changed: " + e.ToString());
+            // RaisePropertyChangedEvent("comLinkStatus");
+            comLinkStatus = "changed";
+        }
+
         // Watch for changes in the Lync status and update lights as necessary.
         void _lync_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             // There must be a better way to do this...
-            if (e.PropertyName == "curPresence" || e.PropertyName == "isMicMuted" || e.PropertyName == "isVideoOff" )
+            if (e.PropertyName == "curPresence" || e.PropertyName == "isMicMuted" || e.PropertyName == "isVideoOff")
             {
                 isMicMuted = _lync.isMicMuted;
                 isVideoOff = _lync.isVideoOff;
@@ -61,54 +67,49 @@ namespace LyncWPFApplication3
         public void CleanUp()
         {
             // Save the VM Prefs to a file on shutdown.
-            SavePrefs();
-            _comm.ActivateLight(LIGHTS.OFF);
-            _comm.CleanUp();
-        }
-        
-
-        private void InitializeComm()
-        {
-            _comm = new LyncComm(ComPort);
-            _comm.CommStatusChanged += comm_CommStatusChanged;
-            _comm.PortsChanged += comm_PortsChanged;
-            ProcessComStatus(_comm.CommunicationStatus);
-        }
-
-        void comm_PortsChanged(object sender, PortsChangedArgs e)
-        {
-            comLinkStatus = "New port found";
-            ComPorts = new System.Collections.ObjectModel.ObservableCollection<string>(e.SerialPorts);
+            SavePrefsExecute(null);
+            _usb.ActivateLight(LIGHTS.OFF);
+            // _usb.CleanUp();
+            _lync = null;
         }
 
 
-        void comm_CommStatusChanged(object sender, CommStatusChanagedEventArgs e)
-        {
-            Debug.WriteLine("Comm stataus changed: " + e.NewStatus.ToString());
-            ProcessComStatus(e.NewStatus);
-        }
 
-        void ProcessComStatus(COM_STATUS curStatus)
-        {
-            switch (curStatus)
-            {
-                case COM_STATUS.Connected:
-                    comLinkStatus = "Connected";
-                    break;
-                case COM_STATUS.Disconnected:
-                    comLinkStatus = "Disconnected";
-                    break;
-                case COM_STATUS.BadPort:
-                    comLinkStatus = "Check Port selection";
-                    break;
-                case COM_STATUS.NotDetermined:
-                    comLinkStatus = "Checking...";
-                    break;
-                default:
-                    comLinkStatus = "Com Status unknown.";
-                    break;
-            }
-        }
+        //void comm_PortsChanged(object sender, PortsChangedArgs e)
+        //{
+        //    comLinkStatus = "New port found";
+        //    ComPorts = new System.Collections.ObjectModel.ObservableCollection<string>(e.SerialPorts);
+        //}
+
+
+        //void comm_CommStatusChanged(object sender, CommStatusChanagedEventArgs e)
+        //{
+        //    Debug.WriteLine("Comm stataus changed: " + e.NewStatus.ToString());
+        //    ProcessComStatus(e.NewStatus);
+        //}
+
+        //void ProcessComStatus(COM_STATUS curStatus)
+        //{
+        //    switch (curStatus)
+        //    {
+        //        case COM_STATUS.Connected:
+        //            comLinkStatus = "Connected";
+        //            break;
+        //        case COM_STATUS.Disconnected:
+        //            comLinkStatus = "Disconnected";
+        //            break;
+        //        case COM_STATUS.BadPort:
+        //            comLinkStatus = "Check Port selection";
+        //            break;
+        //        case COM_STATUS.NotDetermined:
+        //            comLinkStatus = "Checking...";
+        //            break;
+        //        default:
+        //            comLinkStatus = "Com Status unknown.";
+        //            break;
+        //    }
+        //}
+
         #region Preferences
 
         public void CreateDefaultStatuses()
@@ -156,7 +157,7 @@ namespace LyncWPFApplication3
             return true;
         }
 
-        private void SavePrefs()
+        private void SavePrefsExecute(object state)
         {
             // Save Prefs
             SerializePrefs prefs = new SerializePrefs();
@@ -166,25 +167,15 @@ namespace LyncWPFApplication3
             serializer.SerializeObject(prefs);
         }
 
-        void SavePrefsExecute()
-        {
-            SavePrefs();
-        }
-
-        bool CanSavePrefsExecute()
-        {
-            return true;
-        }
-
 
         #endregion
-        
+
         private bool _isMicMuted;
         public bool isMicMuted
         {
             get
             {
-                return _lync.isMicMuted; 
+                return _lync.isMicMuted;
                 //return _isMicMuted; 
             }
             set
@@ -237,7 +228,8 @@ namespace LyncWPFApplication3
         private bool _isVideoOff;
         public bool isVideoOff
         {
-            get {
+            get
+            {
                 return _lync.isVideoOff;
                 // return _isVideoOff; 
             }
@@ -265,7 +257,7 @@ namespace LyncWPFApplication3
             get { return _currentLight; }
             set
             {
-                _comm.ActivateLight(value);
+                _usb.ActivateLight(value);
 
                 _currentLight = value;
                 curWinIcon = lightIcon[value];
@@ -274,6 +266,11 @@ namespace LyncWPFApplication3
                 RaisePropertyChangedEvent("currentLightColor");
                 RaisePropertyChangedEvent("iconName");
             }
+        }
+
+        public void refreshLight()
+        {
+            if(_usb.IsAvailable) _usb.ActivateLight(_currentLight);
         }
 
         public string currentLightColor
@@ -348,14 +345,15 @@ namespace LyncWPFApplication3
         }
 
 
-        public string _comLinkStatus;
+        // public string _comLinkStatus;
         public string comLinkStatus
         {
-            get { return _comLinkStatus; }
+            get { return _usb.IsAvailable?"Connected":"Disconnected"; }
             set
             {
-                _comLinkStatus = value;
                 RaisePropertyChangedEvent("comLinkStatus");
+                RaisePropertyChangedEvent("IsLinkAvailable");
+                refreshLight();
             }
         }
 
@@ -369,9 +367,11 @@ namespace LyncWPFApplication3
 
         bool CanTestLightExecute()
         {
-            // Add if connected
-            return true;
+            return _usb.IsAvailable;
+            // return true;
         }
+
+        public bool IsLinkAvailable { get { return _usb.IsAvailable; }  }
 
         private RelayCommand _TestLight;
         public RelayCommand TestLight
@@ -385,7 +385,21 @@ namespace LyncWPFApplication3
                 return _TestLight;
             }
         }
-            
+
+        private RelayCommand _SavePrefs;
+        public RelayCommand SavePrefs
+        {
+            get
+            {
+                if (_SavePrefs == null)
+                {
+                    _SavePrefs = new RelayCommand(SavePrefsExecute);
+                }
+                return _SavePrefs;
+            }
+        }
+        bool CanSavePrefs() { return true;  }
+
 
     }
 }
