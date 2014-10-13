@@ -11,11 +11,14 @@ using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using System.Windows.Media;
 using System.Diagnostics;
+using GongSolutions.Wpf.DragDrop.Utilities;
+using GongSolutions.Wpf.DragDrop;
+using DragDrop = GongSolutions.Wpf.DragDrop.DragDrop;
 using System.Windows;
 
 namespace LyncWPFApplication3
 {
-    class LyncVM : ObservableObject
+    class LyncVM : ObservableObject, IDropTarget
     {
 
         // private LyncComm _comm;
@@ -25,13 +28,26 @@ namespace LyncWPFApplication3
         public LyncVM()
         {
             // Set the user's preferences from the pref file.
-            LoadPrefs();
-
+            
             _usb = new LyncUSB();
             _usb.UsbTransmitterChangeNotifier += _usb_UsbTransmitterChangeNotifier;
 
+            _userStatus = new ObservableCollection<UserStatus>();
+            // _userStatus.CollectionChanged += _userStatus_CollectionChanged;
+            LoadPrefs();
+
             _lync = new LyncInterface();
             _lync.PropertyChanged += _lync_PropertyChanged;
+
+            this.redLights = new LightCollection(LIGHTS.RED);
+            this.yellowLights = new LightCollection(LIGHTS.YELLOW);
+            this.greenLights = new LightCollection(LIGHTS.GREEN);
+            this.offLights = new LightCollection(LIGHTS.OFF);
+
+            foreach(UserStatus s in this.UserStatuses)
+            {
+                PutStatusInLightBucket(s);
+            }
 
             // Prevent the xaml designer from grabbing the com port.
             DependencyObject dep = new DependencyObject();
@@ -40,9 +56,58 @@ namespace LyncWPFApplication3
                 PresenceToLight(_lync.curPresence);
             }
 
+        }
+
+        private void PutStatusInLightBucket(UserStatus s)
+        {
+            switch (s.Light)
+            {
+                case LIGHTS.RED:
+                    this.redLights.userStatuses.Add(s);
+                    break;
+                case LIGHTS.YELLOW:
+                    this.yellowLights.userStatuses.Add(s);
+                    break;
+                case LIGHTS.GREEN:
+                    this.greenLights.userStatuses.Add(s);
+                    break;
+                case LIGHTS.OFF:
+                    this.offLights.userStatuses.Add(s);
+                    break;
+                case LIGHTS.STATUS:
+                    this.offLights.userStatuses.Add(s);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        void IDropTarget.DragOver(IDropInfo dropInfo)
+        {
+            UserStatus sourceItem = dropInfo.Data as UserStatus;
+            ObservableCollection<UserStatus> targetCollection = dropInfo.TargetCollection as ObservableCollection<UserStatus>;
+            ObservableCollection<UserStatus> sourceCollection = dropInfo.DragInfo.SourceCollection as ObservableCollection<UserStatus>;
+
+            // Need to add a check for the droppable type
+            if (sourceItem != null && targetCollection != null && (targetCollection != sourceCollection))
+            {
+                dropInfo.DropTargetAdorner = DropTargetAdorners.Insert;
+                dropInfo.Effects = DragDropEffects.Move;
+            }
 
         }
 
+        void IDropTarget.Drop(IDropInfo dropInfo)
+        {
+            UserStatus sourceItem = (UserStatus)dropInfo.Data;
+            var targetCollection = (ObservableCollection<UserStatus>)dropInfo.TargetCollection;
+            targetCollection.Add(sourceItem);
+            var sourceCollection = (ObservableCollection<UserStatus>)dropInfo.DragInfo.SourceCollection;
+            // Problem here
+            sourceCollection.Remove(sourceItem);
+            PresenceToLight(_lync.curPresence);
+        }
+        
         void _usb_UsbTransmitterChangeNotifier(object sender, EventArgs e)
         {
             Debug.WriteLine("USB status changed: " + e.ToString());
@@ -62,8 +127,6 @@ namespace LyncWPFApplication3
             }
         }
 
-
-
         public void CleanUp()
         {
             // Save the VM Prefs to a file on shutdown.
@@ -73,7 +136,10 @@ namespace LyncWPFApplication3
             _lync = null;
         }
 
-
+        public LightCollection redLights { get; set; }
+        public LightCollection yellowLights { get; set; }
+        public LightCollection greenLights { get; set; }
+        public LightCollection offLights { get; set; }
 
         //void comm_PortsChanged(object sender, PortsChangedArgs e)
         //{
@@ -114,6 +180,7 @@ namespace LyncWPFApplication3
 
         public void CreateDefaultStatuses()
         {
+
             _userStatus.Add(new UserStatus { StatusName = "Available", Light = LIGHTS.GREEN, LyncStatus = "Available", MutingMatters = false });
             _userStatus.Add(new UserStatus { StatusName = "Do not Disturb", Light = LIGHTS.YELLOW, LyncStatus = "Do Not Disturb", MutingMatters = false });
             _userStatus.Add(new UserStatus { StatusName = "Presenting", Light = LIGHTS.OFF, LyncStatus = "Presenting", MutingMatters = false });
@@ -146,6 +213,7 @@ namespace LyncWPFApplication3
             }
             else CreateDefaultStatuses();
 
+            
             if (prefs != null && prefs.ComPort != null)
             {
                 ComPort = prefs.ComPort;
@@ -153,7 +221,8 @@ namespace LyncWPFApplication3
             else ComPort = "COM5";
 
             _comPorts = new ObservableCollection<string>(SerialPort.GetPortNames());
-
+            
+            
             return true;
         }
 
@@ -240,7 +309,7 @@ namespace LyncWPFApplication3
             }
         }
 
-        ObservableCollection<UserStatus> _userStatus = new ObservableCollection<UserStatus>();
+        ObservableCollection<UserStatus> _userStatus;
         public ObservableCollection<UserStatus> UserStatuses
         {
             get { return _userStatus; }
@@ -270,7 +339,7 @@ namespace LyncWPFApplication3
 
         public void refreshLight()
         {
-            if(_usb.IsAvailable) _usb.ActivateLight(_currentLight);
+            if (_usb.IsAvailable) _usb.ActivateLight(_currentLight);
         }
 
         public string currentLightColor
@@ -298,6 +367,15 @@ namespace LyncWPFApplication3
 
         public void PresenceToLight(string presence)
         {
+            //Deactivate old status.
+            var last_statuses = UserStatuses.Where(s => s.IsActive == true);
+            foreach (var s in last_statuses)
+            {
+                s.IsActive = false;
+            }
+
+
+            
             var user_status = UserStatuses.Where(s => s.LyncStatus == presence).FirstOrDefault();
             var user_statuses = UserStatuses.Where(s => s.LyncStatus == presence);
             if (user_statuses.Count() > 1)
@@ -310,14 +388,18 @@ namespace LyncWPFApplication3
             if (user_status != null)
             {
                 currentLight = user_status.Light;
+                user_status.IsActive = true;
+                // RaisePropertyChangedEvent("IsActive");
             }
             else
             {
                 //New Status found. Add it to the list.
-                UserStatuses.Add(new UserStatus { LyncStatus = presence, StatusName = presence, Light = LIGHTS.OFF, AudioMuted = false, VideoMuted = false });
+                var s = new UserStatus { LyncStatus = presence, StatusName = presence, Light = LIGHTS.OFF, AudioMuted = false, VideoMuted = false, IsActive = true };
+                UserStatuses.Add(s);
+                PutStatusInLightBucket(s);
             }
         }
-
+        
         private string _comPort { get; set; }
         public string ComPort
         {
@@ -328,7 +410,7 @@ namespace LyncWPFApplication3
                 RaisePropertyChangedEvent("ComPort");
             }
         }
-
+        
 
         private ObservableCollection<string> _comPorts = new ObservableCollection<String>();
         public ObservableCollection<string> ComPorts
@@ -343,12 +425,11 @@ namespace LyncWPFApplication3
                 RaisePropertyChangedEvent("ComPorts");
             }
         }
+        
 
-
-        // public string _comLinkStatus;
         public string comLinkStatus
         {
-            get { return _usb.IsAvailable?"Connected":"Disconnected"; }
+            get { return _usb.IsAvailable ? "Connected" : "Disconnected"; }
             set
             {
                 RaisePropertyChangedEvent("comLinkStatus");
@@ -357,13 +438,9 @@ namespace LyncWPFApplication3
             }
         }
 
-
-        void TestLightExecute(object state)
-        {
-            LIGHTS newLight;
-            if (state == null) return;
-            if (Enum.TryParse(state.ToString(), out newLight)) currentLight = newLight;
-        }
+        public bool IsLinkAvailable { get { return _usb.IsAvailable; } }
+        
+        #region Commands
 
         bool CanTestLightExecute()
         {
@@ -371,8 +448,14 @@ namespace LyncWPFApplication3
             // return true;
         }
 
-        public bool IsLinkAvailable { get { return _usb.IsAvailable; }  }
-
+        void TestLightExecute(object state)
+        {
+            LIGHTS newLight;
+            if (state == null) PresenceToLight(_lync.curPresence);
+            if (Enum.TryParse(state.ToString(), out newLight)) currentLight = newLight; 
+            else PresenceToLight(_lync.curPresence);
+        }
+        
         private RelayCommand _TestLight;
         public RelayCommand TestLight
         {
@@ -398,8 +481,44 @@ namespace LyncWPFApplication3
                 return _SavePrefs;
             }
         }
-        bool CanSavePrefs() { return true;  }
+        bool CanSavePrefs() { return true; }
+        
+        #endregion
+
+    }
+
+    internal class LightCollection
+    {
+        public LightCollection(LIGHTS lightColor)
+        {
+            Light = lightColor;
+            _userStatuses = new ObservableCollection<UserStatus>();
+            _userStatuses.CollectionChanged += _userStatuses_CollectionChanged;
+
+        }
+
+        void _userStatuses_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            // Don't try to process removes!
+            if (e.NewStartingIndex == -1)
+            {
+                return;
+            }
+            foreach (var s in e.NewItems)
+            {
+                var item = (UserStatus)s;
+                if (item != null && item.Light != this.Light)
+                {
+                    item.Light = this.Light;
+                    
+                }
+            }
+        }
 
 
+        public LIGHTS Light { get; set; }
+
+        private ObservableCollection<UserStatus> _userStatuses;
+        public ObservableCollection<UserStatus> userStatuses { get { return _userStatuses; } }
     }
 }

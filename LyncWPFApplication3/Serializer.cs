@@ -7,7 +7,7 @@ namespace LyncWPFApplication3
 
     public class Serializer
     {
-        static string PrefsFileName = "LyncLight.dat";
+        static string PrefsFileName = "LyncLightPref.dat";
 
         public Serializer()
         {

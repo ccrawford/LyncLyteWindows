@@ -1,0 +1,129 @@
+﻿<Window
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="clr-namespace:Microsoft.Lync.Controls;assembly=Microsoft.Lync.Controls" 
+        x:Class="LyncWPFApplication3.Config"
+        xmlns:local="clr-namespace:LyncWPFApplication3"
+    xmlns:dd="clr-namespace:GongSolutions.Wpf.DragDrop;assembly=GongSolutions.Wpf.DragDrop"
+        Title="{Binding Path=appName}" Height="368" Width="787" Icon="{Binding iconName}" Closing="Window_Closing">
+    <Window.DataContext>
+        <local:LyncVM></local:LyncVM>
+    </Window.DataContext>
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+    </Window.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="130"/>
+            <RowDefinition Height="1"/>
+            <RowDefinition Height="80*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="244"/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <controls:MyStatusArea Grid.Row="0" Grid.Column="0" Height="98" Margin="10,10,8,0" VerticalAlignment="Top" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+        <Grid Grid.Row="2" Grid.ColumnSpan="2">
+            <Grid.Resources>
+                <DataTemplate x:Key="CustomTemplate">
+                    <StackPanel Orientation="Horizontal">
+                        <Image Source="/Icons/circlearrow.png" Height="16" Width="16" Margin="0,0,4,0" Visibility="{Binding Path=IsActive, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                        <TextBlock Text="{Binding StatusName}" TextWrapping="Wrap"
+                       Background="Transparent"
+                        />
+                    </StackPanel>
+                </DataTemplate>
+            </Grid.Resources>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition />
+                <ColumnDefinition />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="20"/>
+                <RowDefinition Height="100*"/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Grid.Row="0" Grid.Column="0" Margin="5,0,0,0" Text="Red" />
+            <TextBlock Grid.Row="0" Grid.Column="1" Margin="5,0,0,0" Text="Yellow" />
+            <TextBlock Grid.Row="0" Grid.Column="2" Margin="5,0,0,0" Text="Green"/>
+            <TextBlock Grid.Row="0" Grid.Column="3" Margin="5,0,0,0" Text="Off" />
+
+            <ListBox  Grid.Column="0"
+                      Grid.Row="1"
+                      Background="Pink"
+                      ItemsSource="{Binding redLights.userStatuses }"
+                      ItemTemplate="{StaticResource CustomTemplate}"
+                      
+                      dd:DragDrop.IsDragSource="True"
+                      dd:DragDrop.IsDropTarget="True" 
+                      dd:DragDrop.DropHandler= "{Binding}"
+                      dd:DragDrop.DragAdornerTemplate="{StaticResource CustomTemplate}" />
+            <ListBox Grid.Column="1"
+                      Grid.Row="1"
+                      Background="#FFFFFFA2"
+                      ItemsSource="{Binding  yellowLights.userStatuses}"
+                      ItemTemplate="{StaticResource CustomTemplate}"
+                      
+                      dd:DragDrop.DropHandler= "{Binding}"
+                      dd:DragDrop.IsDragSource="True"
+                      dd:DragDrop.IsDropTarget="True"
+                      dd:DragDrop.DragAdornerTemplate="{StaticResource CustomTemplate}" />
+            <ListBox Grid.Column="2"
+                      Grid.Row="1"
+                      Background="LightGreen"
+                      ItemsSource="{Binding  greenLights.userStatuses}"
+                      ItemTemplate="{StaticResource CustomTemplate}"
+                      
+                      dd:DragDrop.DropHandler= "{Binding}"
+                      dd:DragDrop.IsDragSource="True"
+                      dd:DragDrop.IsDropTarget="True"
+                      dd:DragDrop.DragAdornerTemplate="{StaticResource CustomTemplate}" />
+            <ListBox Grid.Column="3"
+                      Grid.Row="1"
+                      Background="LightGray"
+                      ItemsSource="{Binding  offLights.userStatuses}"
+                      ItemTemplate="{StaticResource CustomTemplate}"
+                      
+                      dd:DragDrop.DropHandler= "{Binding}"
+                      dd:DragDrop.IsDragSource="True"
+                      dd:DragDrop.IsDropTarget="True"
+                      dd:DragDrop.DragAdornerTemplate="{StaticResource CustomTemplate}" />
+        </Grid>
+        <Grid Grid.Row="0" Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="20" />
+                <RowDefinition Height="40" />
+                <RowDefinition Height="10*"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+
+                <ColumnDefinition Width="40"/>
+                <ColumnDefinition Width="40"/>
+                <ColumnDefinition Width="100*"/>
+                <ColumnDefinition Width="120"/>
+
+
+            </Grid.ColumnDefinitions>
+
+            <Image Grid.Column="0" Grid.Row="1" HorizontalAlignment="Center" Height="22" Margin="0,9,0,0" VerticalAlignment="Top" Width="22" Source="Icons/voice29.png"/>
+            <Image Grid.Column="0" Grid.Row="1" Visibility="{Binding isMicMuted, Converter={StaticResource BooleanToVisibilityConverter}}" HorizontalAlignment="Center" Height="56" Margin="0,-8,0,0" VerticalAlignment="Top" Width="56" Source="Icons/not1.png"/>
+
+            <Image Grid.Column="1" Grid.Row="1" HorizontalAlignment="Center" Height="22" Margin="0,9,0,0" VerticalAlignment="Top" Width="22" Source="Icons/video137.png"/>
+            <Image Grid.Column="1" Grid.Row="1" Visibility="{Binding isVideoOff, Converter={StaticResource BooleanToVisibilityConverter}}" HorizontalAlignment="Center" Height="56" Margin="0,-8,0,0" VerticalAlignment="Top" Width="56" Source="Icons/not1.png"/>
+
+            <Label Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="3" Height="33" Margin="0,0,0,33" FontSize="16"  VerticalAlignment="Bottom" Width="Auto" Content="{Binding comLinkStatus, Mode=OneWay}" />
+            <Label Grid.Column="3" Grid.Row="1" Content="Light Test:" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,-5,0,0"/>
+            <StackPanel Grid.Column="3" Grid.Row="1" Grid.RowSpan="2" Orientation="Vertical" HorizontalAlignment="Right" >
+                <Button Content="Red" HorizontalAlignment="Left" Width="50" Margin="0,1,0,0" VerticalAlignment="Top" IsEnabled="{Binding Path=IsLinkAvailable}" Command="{Binding Path=TestLight}" CommandParameter="RED"/>
+                <Button Content="Yellow" HorizontalAlignment="Left" Width="50" Margin="0,1,0,0" VerticalAlignment="Top" IsEnabled="{Binding Path=IsLinkAvailable}" Command="{Binding Path=TestLight}" CommandParameter="YELLOW"/>
+                <Button Content="Green" HorizontalAlignment="Left" Width="50" Margin="0,1,0,0" VerticalAlignment="Top" IsEnabled="{Binding Path=IsLinkAvailable}" Command="{Binding Path=TestLight}" CommandParameter="GREEN"/>
+                <Button Content="Off" HorizontalAlignment="Left" Width="50" Margin="0,1,0,0" VerticalAlignment="Top" IsEnabled="{Binding Path=IsLinkAvailable}" Command="{Binding Path=TestLight}" CommandParameter="OFF"/>
+                <Button Content="Reset" HorizontalAlignment="Left" Width="50" Margin="0,1,0,0" VerticalAlignment="Top" IsEnabled="{Binding Path=IsLinkAvailable}" Command="{Binding Path=TestLight}" CommandParameter="RESET"/>
+
+            </StackPanel>
+
+        </Grid>
+    </Grid>
+</Window>

@@ -26,10 +26,7 @@ namespace LyncWPFApplication3
         {
             // Set the user's preferences from the pref file.
             LoadPrefs();
-
-            _usb = new LyncUSB();
             
-
             _lync = new LyncInterface();
             _lync.PropertyChanged += _lync_PropertyChanged;
             
@@ -37,6 +34,7 @@ namespace LyncWPFApplication3
             DependencyObject dep = new DependencyObject();
             if (!DesignerProperties.GetIsInDesignMode(dep))
             {
+                _usb = new LyncUSB();
                 InitializeComm();
                 PresenceToLight(_lync.curPresence);
             }
@@ -114,13 +112,13 @@ namespace LyncWPFApplication3
         public void CreateDefaultStatuses()
         {
             _userStatus.Add(new UserStatus { StatusName = "Available", Light = LIGHTS.GREEN, LyncStatus = "Available", MutingMatters = false });
-            _userStatus.Add(new UserStatus { StatusName = "Do not Disturb", Light = LIGHTS.YELLOW, LyncStatus = "Do Not Disturb", MutingMatters = false });
-            _userStatus.Add(new UserStatus { StatusName = "Presenting", Light = LIGHTS.OFF, LyncStatus = "Presenting", MutingMatters = false });
+            _userStatus.Add(new UserStatus { StatusName = "Do not Disturb", Light = LIGHTS.RED, LyncStatus = "Do Not Disturb", MutingMatters = false });
+            _userStatus.Add(new UserStatus { StatusName = "Presenting", Light = LIGHTS.RED, LyncStatus = "Presenting", MutingMatters = false });
 
-            _userStatus.Add(new UserStatus { StatusName = "In a conference call both muted", Light = LIGHTS.YELLOW, LyncStatus = "In a conference call", MutingMatters = true, AudioMuted = true, VideoMuted = true });
-            _userStatus.Add(new UserStatus { StatusName = "In a conference call muted but on camera", Light = LIGHTS.RED, LyncStatus = "In a conference call", MutingMatters = true, AudioMuted = true, VideoMuted = false });
-            _userStatus.Add(new UserStatus { StatusName = "In a conference call mic on", Light = LIGHTS.RED, LyncStatus = "In a conference call", MutingMatters = true, AudioMuted = false, VideoMuted = true });
-            _userStatus.Add(new UserStatus { StatusName = "In a conference call both on", Light = LIGHTS.RED, LyncStatus = "In a conference call", MutingMatters = true, AudioMuted = false, VideoMuted = false });
+            _userStatus.Add(new UserStatus { StatusName = "In conf call both muted", Light = LIGHTS.YELLOW, LyncStatus = "In a conference call", MutingMatters = true, AudioMuted = true, VideoMuted = true });
+            _userStatus.Add(new UserStatus { StatusName = "In conf call muted, camera on", Light = LIGHTS.RED, LyncStatus = "In a conference call", MutingMatters = true, AudioMuted = true, VideoMuted = false });
+            _userStatus.Add(new UserStatus { StatusName = "In conf call mic on, camera off", Light = LIGHTS.RED, LyncStatus = "In a conference call", MutingMatters = true, AudioMuted = false, VideoMuted = true });
+            _userStatus.Add(new UserStatus { StatusName = "In conf call both on", Light = LIGHTS.RED, LyncStatus = "In a conference call", MutingMatters = true, AudioMuted = false, VideoMuted = false });
 
             _userStatus.Add(new UserStatus { StatusName = "Busy", Light = LIGHTS.YELLOW, LyncStatus = "Busy", MutingMatters = false });
             _userStatus.Add(new UserStatus { StatusName = "In a meeting", Light = LIGHTS.YELLOW, LyncStatus = "In a meeting", MutingMatters = false });
@@ -145,6 +143,7 @@ namespace LyncWPFApplication3
             }
             else CreateDefaultStatuses();
 
+            /*
             if (prefs != null && prefs.ComPort != null)
             {
                 ComPort = prefs.ComPort;
@@ -152,6 +151,7 @@ namespace LyncWPFApplication3
             else ComPort = "COM5";
 
             _comPorts = new ObservableCollection<string>(SerialPort.GetPortNames());
+            */
 
             return true;
         }
@@ -161,7 +161,7 @@ namespace LyncWPFApplication3
             // Save Prefs
             SerializePrefs prefs = new SerializePrefs();
             prefs.Statuses = UserStatuses;
-            prefs.ComPort = ComPort;
+            // prefs.ComPort = ComPort;
             Serializer serializer = new Serializer();
             serializer.SerializeObject(prefs);
         }

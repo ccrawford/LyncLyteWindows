@@ -9,7 +9,7 @@ using System.Runtime.Serialization;
 namespace LyncWPFApplication3
 {
     [Serializable()]
-    public class UserStatus : ISerializable
+    public class UserStatus : ObservableObject, ISerializable
     {
 
         private string _statusName;
@@ -28,16 +28,49 @@ namespace LyncWPFApplication3
             set { _light = value; }
         }
 
-        public string LyncStatus { get; set; }
-        public bool VideoMuted { get; set; }
-        public bool AudioMuted { get; set; }
-        public bool MutingMatters { get; set; }
+        private string _lyncStatus;
+        public string LyncStatus {
+            get { return _lyncStatus; }
+            set { _lyncStatus = value; }
+        }
+
+        private bool _videoMuted;
+        public bool VideoMuted { 
+            get { return _videoMuted; } 
+            set { _videoMuted = value; } 
+        }
+
+        private bool _audioMuted;
+        public bool AudioMuted
+        {
+            get { return _audioMuted; }
+            set { _audioMuted = value; }
+        }
+
+        private bool _mutingMatters;
+        public bool MutingMatters
+        {
+            get { return _mutingMatters; }
+            set { _mutingMatters = value; }
+        }
+
+        private bool _isActive;
+        public bool IsActive
+        {
+            get { return _isActive; }
+            set { 
+                _isActive = value;
+                RaisePropertyChangedEvent("IsActive");
+            }
+
+        }
 
 
         public UserStatus()
         {
         }
 
+        // Serialization constructor
         public UserStatus(SerializationInfo info, StreamingContext ctx)
         {
             try

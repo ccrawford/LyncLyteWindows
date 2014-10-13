@@ -8,7 +8,7 @@ using System.Windows.Input;
 
 namespace LyncWPFApplication3
 {
-    class ObservableObject : INotifyPropertyChanged
+    public class ObservableObject : INotifyPropertyChanged
     {
 
         public event PropertyChangedEventHandler PropertyChanged;

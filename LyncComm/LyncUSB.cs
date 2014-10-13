@@ -19,7 +19,7 @@ namespace LyncLights
  
         private char QUERY_CHAR = '?';
         private char QUERY_RESPONSE_GOOD = '!';
-        private long KEEP_ALIVE_MS = 5 * 1000;
+        private long KEEP_ALIVE_MS = 10 * 1000;
         private Timer keepAlive;
 
         private ArduinoUsbDevice digiSpark;
@@ -81,17 +81,50 @@ namespace LyncLights
         public bool ActivateLight(LIGHTS light)
         {
             Debug.WriteLine("ActivateLight: " + light);
-            if (light != CurrentLight)
+
+            bool retval = false;
+            CurrentLight = light;
+            ClearOutReads();
+    
+            if (SendMessage(((int)light).ToString()))
             {
-                if (SendMessage(((int)light).ToString())) CurrentLight = light;
-                else return false;
+                retval = true;
             }
+            else
+            {
+                //Try again
+                ReadByteFromDS();
+                retval = SendMessage(((int)light).ToString());
+                
+            }
+            
+            
+            return retval;
+        }
+
+        private bool ClearOutReads()
+        {
+            byte[] value;
+            while (digiSpark.ReadByte(out value)) Debug.Write(value.ToString());
+
+            Debug.WriteLine("");
             return true;
+            
+        }
+
+        private string ReadByteFromDS()
+        {
+            byte[] value;
+            if (digiSpark.ReadByte(out value))
+            { return value.ToString(); }
+            else return "Failed";
         }
 
         public bool CheckDeviceHandshake()
         {
-
+            // Update: simplifying the keep alives here.
+            return ActivateLight(CurrentLight);
+            /*
             if (!SendMessage(QUERY_CHAR.ToString())) return false;
             // Cheesy, but the 1/10th of a second wait gives the connection time to spool up.
             System.Threading.Thread.Sleep(100);
@@ -114,12 +147,20 @@ namespace LyncLights
             }
 
             return (response == QUERY_RESPONSE_GOOD);
+             */
         }
 
         private bool SendMessage(string message)
         {
             // return digiSpark.WriteBytes(GetBytes(message));
-            return digiSpark.WriteByte(string.IsNullOrEmpty(message) ? (byte)0 : (byte)message[0]);
+            // Debug.WriteLine("Sending digispark a :'" + message + "'");
+            if (string.IsNullOrEmpty(message))
+                return true;
+
+            bool retVal = digiSpark.WriteByte((byte)message[0]);
+            if (!retVal) Debug.WriteLine("Problem writing to digispark.");
+            return retVal;
+//            return digiSpark.WriteByte(string.IsNullOrEmpty(message) ? (byte)0 : (byte)message[0]);
         }
 
         static byte[] GetBytes(string str)

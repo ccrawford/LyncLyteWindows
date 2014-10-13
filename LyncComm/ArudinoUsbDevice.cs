@@ -145,7 +145,7 @@ namespace DigiSparkDotNet
             int numBytesTransferred = 0;
 
             bool sendResult = usbDevice.ControlTransfer(ref packet, null, 0, out numBytesTransferred);
-
+            if (!sendResult) Debug.WriteLine("Fail in control");
             return sendResult;
 
         }
