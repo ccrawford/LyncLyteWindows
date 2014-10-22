@@ -28,9 +28,12 @@ namespace LyncWPFApplication3
         public LyncVM()
         {
             // Set the user's preferences from the pref file.
-            
-            _usb = new LyncUSB();
-            _usb.UsbTransmitterChangeNotifier += _usb_UsbTransmitterChangeNotifier;
+            DependencyObject dep = new DependencyObject();
+            if (!DesignerProperties.GetIsInDesignMode(dep))
+            {
+                _usb = new LyncUSB();
+                _usb.UsbTransmitterChangeNotifier += _usb_UsbTransmitterChangeNotifier;
+            }
 
             _userStatus = new ObservableCollection<UserStatus>();
             // _userStatus.CollectionChanged += _userStatus_CollectionChanged;
@@ -39,18 +42,18 @@ namespace LyncWPFApplication3
             _lync = new LyncInterface();
             _lync.PropertyChanged += _lync_PropertyChanged;
 
-            this.redLights = new LightCollection(LIGHTS.RED);
-            this.yellowLights = new LightCollection(LIGHTS.YELLOW);
-            this.greenLights = new LightCollection(LIGHTS.GREEN);
-            this.offLights = new LightCollection(LIGHTS.OFF);
+            // removed the this's
+            redLights = new LightCollection(LIGHTS.RED);
+            yellowLights = new LightCollection(LIGHTS.YELLOW);
+            greenLights = new LightCollection(LIGHTS.GREEN);
+            offLights = new LightCollection(LIGHTS.OFF);
 
-            foreach(UserStatus s in this.UserStatuses)
+            foreach (UserStatus s in this.UserStatuses)
             {
                 PutStatusInLightBucket(s);
             }
 
             // Prevent the xaml designer from grabbing the com port.
-            DependencyObject dep = new DependencyObject();
             if (!DesignerProperties.GetIsInDesignMode(dep))
             {
                 PresenceToLight(_lync.curPresence);
@@ -58,24 +61,25 @@ namespace LyncWPFApplication3
 
         }
 
+        // removed the this's
         private void PutStatusInLightBucket(UserStatus s)
         {
             switch (s.Light)
             {
                 case LIGHTS.RED:
-                    this.redLights.userStatuses.Add(s);
+                    App.Current.Dispatcher.Invoke((Action)delegate { redLights.userStatuses.Add(s); });
                     break;
                 case LIGHTS.YELLOW:
-                    this.yellowLights.userStatuses.Add(s);
+                    App.Current.Dispatcher.Invoke((Action)delegate { yellowLights.userStatuses.Add(s); });
                     break;
                 case LIGHTS.GREEN:
-                    this.greenLights.userStatuses.Add(s);
+                    App.Current.Dispatcher.Invoke((Action)delegate { greenLights.userStatuses.Add(s); });
                     break;
                 case LIGHTS.OFF:
-                    this.offLights.userStatuses.Add(s);
+                    App.Current.Dispatcher.Invoke((Action)delegate { offLights.userStatuses.Add(s); });
                     break;
                 case LIGHTS.STATUS:
-                    this.offLights.userStatuses.Add(s);
+                    App.Current.Dispatcher.Invoke((Action)delegate { offLights.userStatuses.Add(s); });
                     break;
                 default:
                     break;
@@ -107,7 +111,7 @@ namespace LyncWPFApplication3
             sourceCollection.Remove(sourceItem);
             PresenceToLight(_lync.curPresence);
         }
-        
+
         void _usb_UsbTransmitterChangeNotifier(object sender, EventArgs e)
         {
             Debug.WriteLine("USB status changed: " + e.ToString());
@@ -213,7 +217,7 @@ namespace LyncWPFApplication3
             }
             else CreateDefaultStatuses();
 
-            
+
             if (prefs != null && prefs.ComPort != null)
             {
                 ComPort = prefs.ComPort;
@@ -221,8 +225,8 @@ namespace LyncWPFApplication3
             else ComPort = "COM5";
 
             _comPorts = new ObservableCollection<string>(SerialPort.GetPortNames());
-            
-            
+
+
             return true;
         }
 
@@ -375,7 +379,7 @@ namespace LyncWPFApplication3
             }
 
 
-            
+
             var user_status = UserStatuses.Where(s => s.LyncStatus == presence).FirstOrDefault();
             var user_statuses = UserStatuses.Where(s => s.LyncStatus == presence);
             if (user_statuses.Count() > 1)
@@ -395,11 +399,12 @@ namespace LyncWPFApplication3
             {
                 //New Status found. Add it to the list.
                 var s = new UserStatus { LyncStatus = presence, StatusName = presence, Light = LIGHTS.OFF, AudioMuted = false, VideoMuted = false, IsActive = true };
-                UserStatuses.Add(s);
+                // The list was created in the UI thread...can only be modified from that thread.
+                UserStatuses.Add(s); 
                 PutStatusInLightBucket(s);
             }
         }
-        
+
         private string _comPort { get; set; }
         public string ComPort
         {
@@ -410,7 +415,7 @@ namespace LyncWPFApplication3
                 RaisePropertyChangedEvent("ComPort");
             }
         }
-        
+
 
         private ObservableCollection<string> _comPorts = new ObservableCollection<String>();
         public ObservableCollection<string> ComPorts
@@ -425,7 +430,7 @@ namespace LyncWPFApplication3
                 RaisePropertyChangedEvent("ComPorts");
             }
         }
-        
+
 
         public string comLinkStatus
         {
@@ -439,7 +444,7 @@ namespace LyncWPFApplication3
         }
 
         public bool IsLinkAvailable { get { return _usb.IsAvailable; } }
-        
+
         #region Commands
 
         bool CanTestLightExecute()
@@ -452,10 +457,10 @@ namespace LyncWPFApplication3
         {
             LIGHTS newLight;
             if (state == null) PresenceToLight(_lync.curPresence);
-            if (Enum.TryParse(state.ToString(), out newLight)) currentLight = newLight; 
+            if (Enum.TryParse(state.ToString(), out newLight)) currentLight = newLight;
             else PresenceToLight(_lync.curPresence);
         }
-        
+
         private RelayCommand _TestLight;
         public RelayCommand TestLight
         {
@@ -467,6 +472,27 @@ namespace LyncWPFApplication3
                 }
                 return _TestLight;
             }
+        }
+
+        void DeleteItemExecute(object state)
+        {
+            Debug.WriteLine("Delete item: " + state.ToString());
+            var stateToDelete = (UserStatus)state;
+            if (stateToDelete.IsActive) return; // Don't try to delete an active state.
+            UserStatuses.Remove(stateToDelete);
+        }
+        private RelayCommand _DeleteItemCommand;
+        public RelayCommand DeleteItemCommand
+        {
+            get
+            {
+                if (_DeleteItemCommand == null)
+                {
+                    _DeleteItemCommand = new RelayCommand(DeleteItemExecute);
+                }
+                return _DeleteItemCommand;
+            }
+
         }
 
         private RelayCommand _SavePrefs;
@@ -482,7 +508,24 @@ namespace LyncWPFApplication3
             }
         }
         bool CanSavePrefs() { return true; }
-        
+
+        private RelayCommand _closeWindow;
+        public RelayCommand CloseWindow
+        {
+            get
+            {
+                if (_closeWindow == null)
+                {
+                    _closeWindow = new RelayCommand(CloseWindowExecute);
+                }
+                return _closeWindow;
+            }
+        }
+        private void CloseWindowExecute(object state)
+        {
+            this.CleanUp();
+        }
+
         #endregion
 
     }
@@ -510,7 +553,7 @@ namespace LyncWPFApplication3
                 if (item != null && item.Light != this.Light)
                 {
                     item.Light = this.Light;
-                    
+
                 }
             }
         }

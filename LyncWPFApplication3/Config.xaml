@@ -4,8 +4,15 @@
         xmlns:controls="clr-namespace:Microsoft.Lync.Controls;assembly=Microsoft.Lync.Controls" 
         x:Class="LyncWPFApplication3.Config"
         xmlns:local="clr-namespace:LyncWPFApplication3"
-    xmlns:dd="clr-namespace:GongSolutions.Wpf.DragDrop;assembly=GongSolutions.Wpf.DragDrop"
-        Title="{Binding Path=appName}" Height="368" Width="787" Icon="{Binding iconName}" Closing="Window_Closing">
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+        xmlns:dd="clr-namespace:GongSolutions.Wpf.DragDrop;assembly=GongSolutions.Wpf.DragDrop"
+    
+        Title="{Binding Path=appName}" Height="368" Width="787" Icon="{Binding iconName}" >
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Closing">
+            <i:InvokeCommandAction Command="{Binding CloseWindow}"  />
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
     <Window.DataContext>
         <local:LyncVM></local:LyncVM>
     </Window.DataContext>
@@ -32,6 +39,7 @@
                        Background="Transparent"
                         />
                     </StackPanel>
+                    
                 </DataTemplate>
             </Grid.Resources>
             <Grid.ColumnDefinitions>
@@ -53,13 +61,20 @@
             <ListBox  Grid.Column="0"
                       Grid.Row="1"
                       Background="Pink"
+                      x:Name="RedList"
                       ItemsSource="{Binding redLights.userStatuses }"
                       ItemTemplate="{StaticResource CustomTemplate}"
                       
                       dd:DragDrop.IsDragSource="True"
                       dd:DragDrop.IsDropTarget="True" 
                       dd:DragDrop.DropHandler= "{Binding}"
-                      dd:DragDrop.DragAdornerTemplate="{StaticResource CustomTemplate}" />
+                      dd:DragDrop.DragAdornerTemplate="{StaticResource CustomTemplate}" >
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="MouseRightButtonUp">
+                        <i:InvokeCommandAction Command="{Binding DeleteItemCommand}" CommandParameter="{Binding ElementName=RedList, Path=SelectedItem}" />
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+            </ListBox>
             <ListBox Grid.Column="1"
                       Grid.Row="1"
                       Background="#FFFFFFA2"

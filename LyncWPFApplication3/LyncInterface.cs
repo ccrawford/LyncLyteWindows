@@ -130,7 +130,8 @@ namespace LyncWPFApplication3
             var m_audioVideo = (AVModality)conversation.Modalities[ModalityTypes.AudioVideo];
             var m_properties = m_audioVideo.Properties;
 
-            if (m_properties[ModalityProperty.AVModalityAudioCaptureMute] != null)
+            // Check to see if that property exists before dereferencing it.
+            if (m_properties.ContainsKey(ModalityProperty.AVModalityAudioCaptureMute) && m_properties[ModalityProperty.AVModalityAudioCaptureMute] != null)
             {
                 // var foo = m_properties[ModalityProperty.AVModalityAudioCaptureMute];
                 return !(bool)m_properties[ModalityProperty.AVModalityAudioCaptureMute];
@@ -176,7 +177,10 @@ namespace LyncWPFApplication3
             isVideoOff = !(e.NewState == ChannelState.Send || e.NewState == ChannelState.SendReceive);
 
             // Get the presence...did we hang up? and send to the processor.
-            curPresence = _self.Contact.GetContactInformation(ContactInformationType.Activity).ToString();
+            // Check for null here
+            if (_self != null && _self.Contact.GetContactInformation(ContactInformationType.Activity) != null)
+                curPresence = _self.Contact.GetContactInformation(ContactInformationType.Activity).ToString();
+            else curPresence = "Unknown";
         }
 
 
@@ -196,7 +200,11 @@ namespace LyncWPFApplication3
                 System.Diagnostics.Debug.WriteLine("avModProp: " + e.Property + " : " + e.Value);
 
                 isMicMuted = (bool)e.Value;
-                curPresence = _self.Contact.GetContactInformation(ContactInformationType.Activity).ToString();
+                // Add null check here.
+                if (_self != null && _self.Contact.GetContactInformation(ContactInformationType.Activity) != null)
+                    curPresence = _self.Contact.GetContactInformation(ContactInformationType.Activity).ToString();
+                else
+                    curPresence = "Unknown";
             }
         }
 
