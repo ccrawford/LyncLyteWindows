@@ -15,6 +15,8 @@ using GongSolutions.Wpf.DragDrop.Utilities;
 using GongSolutions.Wpf.DragDrop;
 using DragDrop = GongSolutions.Wpf.DragDrop.DragDrop;
 using System.Windows;
+using Dweet_CAC;
+using Thingspeak_CAC;
 
 namespace LyncWPFApplication3
 {
@@ -24,6 +26,8 @@ namespace LyncWPFApplication3
         // private LyncComm _comm;
         private LyncUSB _usb;
         private LyncInterface _lync;
+        private DweetNet _dweet;
+        private Thingspeak _ts;
 
         public LyncVM()
         {
@@ -38,6 +42,9 @@ namespace LyncWPFApplication3
             _userStatus = new ObservableCollection<UserStatus>();
             // _userStatus.CollectionChanged += _userStatus_CollectionChanged;
             LoadPrefs();
+
+            _dweet = new DweetNet(dweetThingName, null);
+            _ts = new Thingspeak();
 
             _lync = new LyncInterface();
             _lync.PropertyChanged += _lync_PropertyChanged;
@@ -211,21 +218,30 @@ namespace LyncWPFApplication3
             SerializePrefs prefs = new SerializePrefs();
 
             prefs = serializer.DeSerializeObject();
-            if (prefs != null && prefs.Statuses != null)
+            if (prefs == null) 
+            {
+                CreateDefaultStatuses();
+                return false;
+            }
+
+            if (prefs.Statuses != null)
             {
                 UserStatuses = prefs.Statuses;
             }
             else CreateDefaultStatuses();
 
-
-            if (prefs != null && prefs.ComPort != null)
+/*            
+ *          if (prefs.ComPort != null)
             {
                 ComPort = prefs.ComPort;
             }
             else ComPort = "COM5";
 
-            _comPorts = new ObservableCollection<string>(SerialPort.GetPortNames());
-
+            // _comPorts = new ObservableCollection<string>(SerialPort.GetPortNames());
+            
+ */
+            if (prefs.UseDweet != null) useDweet = prefs.UseDweet;
+            if (prefs.DweetThingName != null) dweetThingName = prefs.DweetThingName;
 
             return true;
         }
@@ -236,6 +252,11 @@ namespace LyncWPFApplication3
             SerializePrefs prefs = new SerializePrefs();
             prefs.Statuses = UserStatuses;
             prefs.ComPort = ComPort;
+            prefs.DweetThingName = dweetThingName;
+            prefs.UseDweet = useDweet;
+            prefs.ThingID = thingID;
+            prefs.UseThing = useThingSpeak;
+            prefs.ThingWriteKey = thingWriteKey;
             Serializer serializer = new Serializer();
             serializer.SerializeObject(prefs);
         }
@@ -257,6 +278,82 @@ namespace LyncWPFApplication3
                 RaisePropertyChangedEvent("isMicMuted");
             }
         }
+
+        private bool _useDweet;
+        public bool useDweet
+        {
+            get { return _useDweet; }
+            set { 
+                _useDweet = value;
+                RaisePropertyChangedEvent("useDweet");
+            }
+        }
+
+        private string _dweetThingName;
+        public string dweetThingName
+        {
+            get { return _dweetThingName; }
+            set
+            {
+                _dweetThingName = value;
+                RaisePropertyChangedEvent("dweetThingName");
+            }
+        }
+
+#region ThingSpeak
+        private bool _useThingSpeak;
+        public bool useThingSpeak
+        {
+            get { return _useThingSpeak; }
+            set { 
+                _useThingSpeak = value;
+                RaisePropertyChangedEvent("useThingSpeak");
+            }
+        }
+
+        private string _thingID;
+        public string thingID
+        {
+            get { return _thingID; }
+            set
+            {
+                _thingID = value;
+                RaisePropertyChangedEvent("thingID");
+            }
+        }
+
+        private string _thingBaseURL;
+        public string thingBaseURL
+        {
+            get { return _thingBaseURL; }
+            set
+            {
+                _thingBaseURL = value;
+                RaisePropertyChangedEvent("thingBaseURL");
+            }
+        }
+
+        private string _thingWriteKey;
+        public string thingWriteKey
+        {
+            get { return _thingWriteKey; }
+            set
+            {
+                _thingWriteKey = value;
+                RaisePropertyChangedEvent("thingWriteKey");
+            }
+        }
+
+
+#endregion
+
+        private Dictionary<LIGHTS, System.Drawing.Icon> lightIconResource = new Dictionary<LIGHTS, System.Drawing.Icon>
+        {
+            { LIGHTS.RED, Properties.Resources.red},
+            { LIGHTS.YELLOW, Properties.Resources.yellow},
+            { LIGHTS.GREEN, Properties.Resources.green},
+            { LIGHTS.OFF, Properties.Resources.off}
+        };
 
         private Dictionary<LIGHTS, String> lightIcon = new Dictionary<LIGHTS, String> 
         {
@@ -338,7 +435,27 @@ namespace LyncWPFApplication3
                 RaisePropertyChangedEvent("currentLight");
                 RaisePropertyChangedEvent("currentLightColor");
                 RaisePropertyChangedEvent("iconName");
+                SetDweetValue(_currentLight.ToString(), _lync.curPresence);
             }
+        }
+
+        private void SetDweetValue(string LightName, string Presence)
+        {
+            if (useDweet)
+            {
+                _dweet.Thing = dweetThingName;
+                _dweet.Content = new Dictionary<string, string> { { "color", LightName }, {"presence", Presence } };
+                _dweet.DweetIt();
+            }
+            if (useThingSpeak)
+            {
+                _ts.BaseURL = "http://cacspeak.cloudapp.net";
+                _ts.ChannelID = thingID;
+                _ts.WriteAPI = thingWriteKey;
+                _ts.Content = new Dictionary<int,string> {{1, LightName}};
+                _ts.ThingIt();
+            }
+
         }
 
         public void refreshLight()
@@ -393,6 +510,7 @@ namespace LyncWPFApplication3
             {
                 currentLight = user_status.Light;
                 user_status.IsActive = true;
+
                 // RaisePropertyChangedEvent("IsActive");
             }
             else

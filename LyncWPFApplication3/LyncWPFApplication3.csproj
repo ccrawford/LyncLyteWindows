@@ -33,6 +33,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>Resources\green.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="GongSolutions.Wpf.DragDrop">
       <HintPath>..\packages\gong-wpf-dragdrop.0.1.4.3\lib\net40\GongSolutions.Wpf.DragDrop.dll</HintPath>
@@ -58,6 +61,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Interactivity, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Windows.Interactivity.WPF.2.0.20525\lib\net40\System.Windows.Interactivity.dll</HintPath>
     </Reference>
@@ -94,6 +98,7 @@
     <Compile Include="RelayCommand.cs" />
     <Compile Include="SerializePrefs.cs" />
     <Compile Include="Serializer.cs" />
+    <Compile Include="StringToResourceConverter.cs" />
     <Compile Include="UserStatus.cs" />
     <Compile Include="Window1.xaml.cs">
       <DependentUpon>Window1.xaml</DependentUpon>
@@ -136,27 +141,50 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Dweet_CAC\Dweet_CAC.csproj">
+      <Project>{37c94e37-e73a-450e-ad43-78c84cdc0b74}</Project>
+      <Name>Dweet_CAC</Name>
+    </ProjectReference>
     <ProjectReference Include="..\LyncComm\LyncLights.csproj">
       <Project>{f62f5e02-97af-4647-8cc1-3f2c5c20f7a0}</Project>
       <Name>LyncLights</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Thingspeak_CAC\Thingspeak_CAC.csproj">
+      <Project>{5eb40b87-2343-468b-86d2-90cf629d0a88}</Project>
+      <Name>Thingspeak_CAC</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Icons\x.png" />
+    <EmbeddedResource Include="Icons\x.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Icons\green.png" />
-    <Resource Include="Icons\off.png" />
-    <Resource Include="Icons\red.png" />
-    <Resource Include="Icons\yellow.png" />
+    <EmbeddedResource Include="Icons\green.png" />
+    <EmbeddedResource Include="Icons\off.png" />
+    <EmbeddedResource Include="Icons\red.png" />
+    <EmbeddedResource Include="Icons\yellow.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Icons\not1.png" />
-    <Resource Include="Icons\video137.png" />
-    <Resource Include="Icons\voice29.png" />
+    <EmbeddedResource Include="Icons\not1.png" />
+    <EmbeddedResource Include="Icons\video137.png" />
+    <EmbeddedResource Include="Icons\voice29.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Icons\circlearrow.png" />
+    <EmbeddedResource Include="Icons\circlearrow.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\RedLight.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\red.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\off.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\yellow.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\green.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

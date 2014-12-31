@@ -89,6 +89,10 @@ namespace DigiSparkDotNet
 
         private void OnDeviceNotifyEvent(object sender, DeviceNotifyEventArgs e)
         {
+
+            //TODO XXX : Fault here if network drops. Maybe check to be sure e is set?
+            if (e == null) return;
+
             if (e.Device.IdVendor == VendorId && e.Device.IdProduct == ProductId)
             {
                 if (e.EventType == EventType.DeviceArrival)

@@ -7,7 +7,7 @@
         xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
         xmlns:dd="clr-namespace:GongSolutions.Wpf.DragDrop;assembly=GongSolutions.Wpf.DragDrop"
     
-        Title="{Binding Path=appName}" Height="368" Width="787" Icon="{Binding iconName}" >
+        Title="{Binding Path=appName}" Height="397" Width="787" Icon="{Binding iconName}" >
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Closing">
             <i:InvokeCommandAction Command="{Binding CloseWindow}"  />
@@ -18,6 +18,7 @@
     </Window.DataContext>
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        <local:StringToResourceConverter x:Key="StringToResourceConverter" />
     </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -39,7 +40,7 @@
                        Background="Transparent"
                         />
                     </StackPanel>
-                    
+
                 </DataTemplate>
             </Grid.Resources>
             <Grid.ColumnDefinitions>
@@ -111,33 +112,102 @@
                 <RowDefinition Height="20" />
                 <RowDefinition Height="40" />
                 <RowDefinition Height="10*"/>
+                <RowDefinition Height="30" />
+                <RowDefinition Height="30" />
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
 
                 <ColumnDefinition Width="40"/>
                 <ColumnDefinition Width="40"/>
-                <ColumnDefinition Width="100*"/>
-                <ColumnDefinition Width="120"/>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="90"/>
 
 
             </Grid.ColumnDefinitions>
 
-            <Image Grid.Column="0" Grid.Row="1" HorizontalAlignment="Center" Height="22" Margin="0,9,0,0" VerticalAlignment="Top" Width="22" Source="Icons/voice29.png"/>
-            <Image Grid.Column="0" Grid.Row="1" Visibility="{Binding isMicMuted, Converter={StaticResource BooleanToVisibilityConverter}}" HorizontalAlignment="Center" Height="56" Margin="0,-8,0,0" VerticalAlignment="Top" Width="56" Source="Icons/not1.png"/>
+            <Image Grid.Column="0" Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" Height="22" Width="22" Source="Icons/voice29.png"/>
+            <Image Grid.Column="0" Grid.Row="1" Visibility="{Binding isMicMuted, Converter={StaticResource BooleanToVisibilityConverter}}" HorizontalAlignment="Center" Height="56" VerticalAlignment="Center" Width="56" Source="Icons/not1.png" />
 
-            <Image Grid.Column="1" Grid.Row="1" HorizontalAlignment="Center" Height="22" Margin="0,9,0,0" VerticalAlignment="Top" Width="22" Source="Icons/video137.png"/>
-            <Image Grid.Column="1" Grid.Row="1" Visibility="{Binding isVideoOff, Converter={StaticResource BooleanToVisibilityConverter}}" HorizontalAlignment="Center" Height="56" Margin="0,-8,0,0" VerticalAlignment="Top" Width="56" Source="Icons/not1.png"/>
+            <Image Grid.Column="1" Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" Height="22" Width="22" Source="Icons/video137.png"/>
+            <Image Grid.Column="1" Grid.Row="1" Visibility="{Binding isVideoOff, Converter={StaticResource BooleanToVisibilityConverter}}" HorizontalAlignment="Center" Height="56" VerticalAlignment="Center" Width="56" Source="Icons/not1.png" />
 
             <Label Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="3" Height="33" Margin="0,0,0,33" FontSize="16"  VerticalAlignment="Bottom" Width="Auto" Content="{Binding comLinkStatus, Mode=OneWay}" />
-            <Label Grid.Column="3" Grid.Row="1" Content="Light Test:" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,-5,0,0"/>
-            <StackPanel Grid.Column="3" Grid.Row="1" Grid.RowSpan="2" Orientation="Vertical" HorizontalAlignment="Right" >
+            <Label Grid.Column="2" Content="Override:" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,15,0,0" Grid.RowSpan="2" Width="70" Height="26" HorizontalContentAlignment="Right"/>
+            <StackPanel Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="3" Orientation="Horizontal">
+                <CheckBox IsChecked="{Binding useDweet}" VerticalAlignment="Center" Margin="0,8">Use Dweet</CheckBox>
+                <Label Padding="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="10,7">Dweet Thing:</Label>
+                <TextBox VerticalAlignment="Center" Width="250" Text="{Binding dweetThingName}" />
+            </StackPanel>
+            <StackPanel Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="4" Orientation="Horizontal">
+                <CheckBox IsChecked="{Binding useThingSpeak}" VerticalAlignment="Center" Margin="0,8">Use ThingSpeak</CheckBox>
+                <Label Padding="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="10,7">ID:</Label>
+                <TextBox VerticalAlignment="Center" Width="50" Text="{Binding thingID}" />
+                <Label Padding="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="10,7">Key:</Label>
+                <TextBox VerticalAlignment="Center" Width="174" Text="{Binding thingWriteKey}" />
+            </StackPanel>
+            <StackPanel Grid.Column="3" Grid.Row="1" Grid.RowSpan="3" Orientation="Vertical" HorizontalAlignment="Right" Width="80" Margin="0,0,4,0">
+                <StackPanel.Resources>
+                    <SolidColorBrush x:Key="selectedBrush" Color="LightBlue" TextBlock.FontWeight="Bold" />
+                    <ControlTemplate x:Key="ToggleButtonCac" TargetType="{x:Type ToggleButton}">
+                        <Border Name="Border" Background="LightGray" CornerRadius="0" BorderBrush="Black" BorderThickness="1,1,1,1"  >
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" Content="{TemplateBinding Content}" TextBlock.FontWeight="Normal" TextBlock.Foreground="Black" ></ContentPresenter>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <MultiTrigger>
+                                <MultiTrigger.Conditions>
+                                    <Condition Property="IsChecked" Value="true" />
+                                </MultiTrigger.Conditions>
+                                <MultiTrigger.Setters>
+                                    <Setter TargetName="Border" Property="Background" Value="{StaticResource selectedBrush}" />
+                                    <Setter TargetName="Border" Property="TextBlock.FontWeight" Value="Bold" />
+                                </MultiTrigger.Setters>
+
+                            </MultiTrigger>
+                            <MultiTrigger>
+                                <MultiTrigger.Conditions>
+                                    <Condition Property="ToggleButton.IsMouseOver" Value="true" />
+                                    <Condition Property="IsChecked" Value="false" />
+                                </MultiTrigger.Conditions>
+                                <MultiTrigger.Setters>
+                                    <Setter TargetName="Border" Property="Background" Value="White" />
+                                </MultiTrigger.Setters>
+                            </MultiTrigger>
+                            <MultiTrigger>
+                                <MultiTrigger.Conditions>
+                                    <Condition Property="IsEnabled" Value="false" />
+                                </MultiTrigger.Conditions>
+                                <MultiTrigger.Setters>
+                                    <Setter TargetName="Border" Property="Opacity" Value="0.40"/>
+                                </MultiTrigger.Setters>
+                            </MultiTrigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </StackPanel.Resources>
+                <RadioButton Style="{StaticResource {x:Type ToggleButton}}" Content="Red" Width="80" Margin="0,2,0,0" GroupName="Manual" 
+                         Template="{DynamicResource ToggleButtonCac}" 
+                         Command="{Binding Path=TestLight}" CommandParameter="RED"
+                             IsEnabled="{Binding Path=IsLinkAvailable}" />
+                <RadioButton Style="{StaticResource {x:Type ToggleButton}}" Content="Yellow" Width="80" Margin="0,2,0,0" GroupName="Manual" 
+                         Template="{DynamicResource ToggleButtonCac}"
+                         Command="{Binding Path=TestLight}" CommandParameter="YELLOW" IsEnabled="{Binding Path=IsLinkAvailable}"/>
+                <RadioButton Style="{StaticResource {x:Type ToggleButton}}" Content="Green" Width="80" Margin="0,2,0,0" GroupName="Manual" 
+                         Template="{DynamicResource ToggleButtonCac}"
+                         Command="{Binding Path=TestLight}" CommandParameter="GREEN" IsEnabled="{Binding Path=IsLinkAvailable}"/>
+                <RadioButton Style="{StaticResource {x:Type ToggleButton}}" Content="Off" Width="80" Margin="0,2,0,2" GroupName="Manual" 
+                         Template="{DynamicResource ToggleButtonCac}"
+                         Command="{Binding Path=TestLight}" CommandParameter="OFF" IsEnabled="{Binding Path=IsLinkAvailable}"/>
+                <RadioButton Style="{StaticResource {x:Type ToggleButton}}" Content="Lync" Width="80" Margin="0,4,0,4" GroupName="Manual" 
+                         Template="{DynamicResource ToggleButtonCac}" IsChecked="True"
+                         Command="{Binding Path=TestLight}" CommandParameter="UNKNOWN" IsEnabled="{Binding Path=IsLinkAvailable}"/>
+            </StackPanel>
+            <!--<StackPanel Grid.Column="2" Grid.Row="1" Grid.RowSpan="2">
                 <Button Content="Red" HorizontalAlignment="Left" Width="50" Margin="0,1,0,0" VerticalAlignment="Top" IsEnabled="{Binding Path=IsLinkAvailable}" Command="{Binding Path=TestLight}" CommandParameter="RED"/>
                 <Button Content="Yellow" HorizontalAlignment="Left" Width="50" Margin="0,1,0,0" VerticalAlignment="Top" IsEnabled="{Binding Path=IsLinkAvailable}" Command="{Binding Path=TestLight}" CommandParameter="YELLOW"/>
                 <Button Content="Green" HorizontalAlignment="Left" Width="50" Margin="0,1,0,0" VerticalAlignment="Top" IsEnabled="{Binding Path=IsLinkAvailable}" Command="{Binding Path=TestLight}" CommandParameter="GREEN"/>
                 <Button Content="Off" HorizontalAlignment="Left" Width="50" Margin="0,1,0,0" VerticalAlignment="Top" IsEnabled="{Binding Path=IsLinkAvailable}" Command="{Binding Path=TestLight}" CommandParameter="OFF"/>
                 <Button Content="Reset" HorizontalAlignment="Left" Width="50" Margin="0,1,0,0" VerticalAlignment="Top" IsEnabled="{Binding Path=IsLinkAvailable}" Command="{Binding Path=TestLight}" CommandParameter="RESET"/>
 
-            </StackPanel>
+            </StackPanel>-->
 
         </Grid>
     </Grid>

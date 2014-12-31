@@ -1,13 +1,21 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.30501.0
+VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LyncWPFApplication3", "LyncWPFApplication3\LyncWPFApplication3.csproj", "{FC2278FC-AEA0-4600-B712-5250487977E1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LightsConsoleTestApp", "LightsConsoleTestApp\LightsConsoleTestApp.csproj", "{8F8F3037-6E6E-47A3-9297-52FA7DB4DEF3}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LyncLights", "LyncComm\LyncLights.csproj", "{F62F5E02-97AF-4647-8CC1-3F2C5C20F7A0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dweet_CAC", "Dweet_CAC\Dweet_CAC.csproj", "{37C94E37-E73A-450E-AD43-78C84CDC0B74}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestDweet", "TestDweet\TestDweet.csproj", "{BA0EEBD3-9543-4944-BE43-30BDD02B95DB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Thingspeak_CAC", "Thingspeak_CAC\Thingspeak_CAC.csproj", "{5EB40B87-2343-468B-86D2-90CF629D0A88}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestThingSpeak", "ConsoleApplication1\TestThingSpeak.csproj", "{96DCE198-10EF-4AE6-B293-3FB1BADB38C0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +35,22 @@ Global
 		{F62F5E02-97AF-4647-8CC1-3F2C5C20F7A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F62F5E02-97AF-4647-8CC1-3F2C5C20F7A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F62F5E02-97AF-4647-8CC1-3F2C5C20F7A0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{37C94E37-E73A-450E-AD43-78C84CDC0B74}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{37C94E37-E73A-450E-AD43-78C84CDC0B74}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{37C94E37-E73A-450E-AD43-78C84CDC0B74}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{37C94E37-E73A-450E-AD43-78C84CDC0B74}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BA0EEBD3-9543-4944-BE43-30BDD02B95DB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BA0EEBD3-9543-4944-BE43-30BDD02B95DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BA0EEBD3-9543-4944-BE43-30BDD02B95DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BA0EEBD3-9543-4944-BE43-30BDD02B95DB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5EB40B87-2343-468B-86D2-90CF629D0A88}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5EB40B87-2343-468B-86D2-90CF629D0A88}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5EB40B87-2343-468B-86D2-90CF629D0A88}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5EB40B87-2343-468B-86D2-90CF629D0A88}.Release|Any CPU.Build.0 = Release|Any CPU
+		{96DCE198-10EF-4AE6-B293-3FB1BADB38C0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{96DCE198-10EF-4AE6-B293-3FB1BADB38C0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{96DCE198-10EF-4AE6-B293-3FB1BADB38C0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{96DCE198-10EF-4AE6-B293-3FB1BADB38C0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

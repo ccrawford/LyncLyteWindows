@@ -24,11 +24,10 @@ namespace LyncWPFApplication3
             InitializeComponent();
         }
 
-       /* private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        private void CheckBox_Checked(object sender, RoutedEventArgs e)
         {
-            LyncVM vm = (LyncVM)base.DataContext;
-            vm.CleanUp();
+
         }
-        */
+
     }
 }
