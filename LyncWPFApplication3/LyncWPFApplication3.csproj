@@ -155,21 +155,21 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Icons\x.png" />
+    <Resource Include="Icons\x.png" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Icons\green.png" />
-    <EmbeddedResource Include="Icons\off.png" />
-    <EmbeddedResource Include="Icons\red.png" />
-    <EmbeddedResource Include="Icons\yellow.png" />
+    <Resource Include="Icons\green.png" />
+    <Resource Include="Icons\off.png" />
+    <Resource Include="Icons\red.png" />
+    <Resource Include="Icons\yellow.png" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Icons\not1.png" />
-    <EmbeddedResource Include="Icons\video137.png" />
-    <EmbeddedResource Include="Icons\voice29.png" />
+    <Resource Include="Icons\not1.png" />
+    <Resource Include="Icons\video137.png" />
+    <Resource Include="Icons\voice29.png" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Icons\circlearrow.png" />
+    <Resource Include="Icons\circlearrow.png" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\RedLight.ico" />

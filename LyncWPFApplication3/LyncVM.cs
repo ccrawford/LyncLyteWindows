@@ -243,6 +243,11 @@ namespace LyncWPFApplication3
             if (prefs.UseDweet != null) useDweet = prefs.UseDweet;
             if (prefs.DweetThingName != null) dweetThingName = prefs.DweetThingName;
 
+            if (prefs.UseThing != null) useThingSpeak = prefs.UseThing;
+            if (prefs.ThingBaseURL != null) thingBaseURL = prefs.ThingBaseURL;
+            if (prefs.ThingID != null) thingID = prefs.ThingID;
+            if (prefs.ThingWriteKey != null) thingWriteKey = prefs.ThingWriteKey;
+
             return true;
         }
 

@@ -112,8 +112,8 @@
                 <RowDefinition Height="20" />
                 <RowDefinition Height="40" />
                 <RowDefinition Height="10*"/>
-                <RowDefinition Height="30" />
-                <RowDefinition Height="30" />
+                <RowDefinition Height="32" />
+                <RowDefinition Height="32" />
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
 
@@ -136,16 +136,16 @@
             <StackPanel Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="3" Orientation="Horizontal">
                 <CheckBox IsChecked="{Binding useDweet}" VerticalAlignment="Center" Margin="0,8">Use Dweet</CheckBox>
                 <Label Padding="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="10,7">Dweet Thing:</Label>
-                <TextBox VerticalAlignment="Center" Width="250" Text="{Binding dweetThingName}" />
+                <TextBox VerticalAlignment="Center" Width="200" Text="{Binding dweetThingName}" />
             </StackPanel>
             <StackPanel Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="4" Orientation="Horizontal">
                 <CheckBox IsChecked="{Binding useThingSpeak}" VerticalAlignment="Center" Margin="0,8">Use ThingSpeak</CheckBox>
                 <Label Padding="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="10,7">ID:</Label>
                 <TextBox VerticalAlignment="Center" Width="50" Text="{Binding thingID}" />
                 <Label Padding="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="10,7">Key:</Label>
-                <TextBox VerticalAlignment="Center" Width="174" Text="{Binding thingWriteKey}" />
+                <TextBox VerticalAlignment="Center" Width="124" Text="{Binding thingWriteKey}" />
             </StackPanel>
-            <StackPanel Grid.Column="3" Grid.Row="1" Grid.RowSpan="3" Orientation="Vertical" HorizontalAlignment="Right" Width="80" Margin="0,0,4,0">
+            <StackPanel Grid.Column="3" Grid.Row="1" Grid.RowSpan="4" Orientation="Vertical" HorizontalAlignment="Right" Width="80" Margin="0,0,4,0">
                 <StackPanel.Resources>
                     <SolidColorBrush x:Key="selectedBrush" Color="LightBlue" TextBlock.FontWeight="Bold" />
                     <ControlTemplate x:Key="ToggleButtonCac" TargetType="{x:Type ToggleButton}">

@@ -71,14 +71,23 @@ namespace Thingspeak_CAC
                 return -1;
             }
 
-            var httpResponse = (HttpWebResponse)httpWebRequest.GetResponse();
             string result;
-            using (var streamReader = new StreamReader(httpResponse.GetResponseStream()))
+            try
             {
-                result = streamReader.ReadToEnd();
-                streamReader.Close();
+                var httpResponse = (HttpWebResponse)httpWebRequest.GetResponse();
+                using (var streamReader = new StreamReader(httpResponse.GetResponseStream()))
+                {
+                    result = streamReader.ReadToEnd();
+                    streamReader.Close();
+                }
             }
+            catch (Exception e)
+            {
+               result = "-1";
+            }
+            
             return int.Parse(result);
+            
         }
 
     }
