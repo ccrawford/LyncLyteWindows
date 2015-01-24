@@ -75,6 +75,9 @@ namespace LyncWPFApplication3
 
                 if (_lyncClient.State != ClientState.SignedIn)
                 {
+                    lyncStatus = "Lync is not signed in.";
+                    return;
+                    // Add some logic here to handle the not-signed-in state.
 
                     _lyncClient.BeginSignIn(
                         null,

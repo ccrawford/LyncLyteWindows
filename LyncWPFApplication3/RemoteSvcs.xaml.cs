@@ -15,14 +15,13 @@ using System.Windows.Shapes;
 namespace LyncWPFApplication3
 {
     /// <summary>
-    /// Interaction logic for Config.xaml
+    /// Interaction logic for RemoteSvcs.xaml
     /// </summary>
-    public partial class Config : Window
+    public partial class RemoteSvcs : Window
     {
-        public Config()
+        public RemoteSvcs()
         {
             InitializeComponent();
         }
-
     }
 }

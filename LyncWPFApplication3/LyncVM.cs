@@ -196,10 +196,10 @@ namespace LyncWPFApplication3
             _userStatus.Add(new UserStatus { StatusName = "Do not Disturb", Light = LIGHTS.YELLOW, LyncStatus = "Do Not Disturb", MutingMatters = false });
             _userStatus.Add(new UserStatus { StatusName = "Presenting", Light = LIGHTS.OFF, LyncStatus = "Presenting", MutingMatters = false });
 
-            _userStatus.Add(new UserStatus { StatusName = "In a conference call both muted", Light = LIGHTS.YELLOW, LyncStatus = "In a conference call", MutingMatters = true, AudioMuted = true, VideoMuted = true });
-            _userStatus.Add(new UserStatus { StatusName = "In a conference call muted but on camera", Light = LIGHTS.RED, LyncStatus = "In a conference call", MutingMatters = true, AudioMuted = true, VideoMuted = false });
-            _userStatus.Add(new UserStatus { StatusName = "In a conference call mic on", Light = LIGHTS.RED, LyncStatus = "In a conference call", MutingMatters = true, AudioMuted = false, VideoMuted = true });
-            _userStatus.Add(new UserStatus { StatusName = "In a conference call both on", Light = LIGHTS.RED, LyncStatus = "In a conference call", MutingMatters = true, AudioMuted = false, VideoMuted = false });
+            _userStatus.Add(new UserStatus { StatusName = "In conf call both muted", Light = LIGHTS.YELLOW, LyncStatus = "In a conference call", MutingMatters = true, AudioMuted = true, VideoMuted = true });
+            _userStatus.Add(new UserStatus { StatusName = "In conf call mic off, camera on", Light = LIGHTS.RED, LyncStatus = "In a conference call", MutingMatters = true, AudioMuted = true, VideoMuted = false });
+            _userStatus.Add(new UserStatus { StatusName = "In conf call mic on camera off", Light = LIGHTS.RED, LyncStatus = "In a conference call", MutingMatters = true, AudioMuted = false, VideoMuted = true });
+            _userStatus.Add(new UserStatus { StatusName = "In conf call both on", Light = LIGHTS.RED, LyncStatus = "In a conference call", MutingMatters = true, AudioMuted = false, VideoMuted = false });
 
             _userStatus.Add(new UserStatus { StatusName = "Busy", Light = LIGHTS.YELLOW, LyncStatus = "Busy", MutingMatters = false });
             _userStatus.Add(new UserStatus { StatusName = "In a meeting", Light = LIGHTS.YELLOW, LyncStatus = "In a meeting", MutingMatters = false });
@@ -280,8 +280,15 @@ namespace LyncWPFApplication3
             set
             {
                 _isMicMuted = value;
+                micState = _isMicMuted ? "Muted" : "Live";
                 RaisePropertyChangedEvent("isMicMuted");
             }
+        }
+
+        public string micState
+        {
+            get { return _lync.isMicMuted ? "Muted" : "Live"; }
+            set { RaisePropertyChangedEvent("micState"); }
         }
 
         private bool _useDweet;
@@ -401,6 +408,7 @@ namespace LyncWPFApplication3
         }
 
         private bool _isVideoOff;
+        private string _videoStatus;
         public bool isVideoOff
         {
             get
@@ -411,9 +419,17 @@ namespace LyncWPFApplication3
             set
             {
                 _isVideoOff = value;
+                videoStatus = value ? "Off" : "On";
                 RaisePropertyChangedEvent("isVideoOff");
             }
         }
+
+        public string videoStatus
+        {
+            get { return _lync.isVideoOff ? "Off" : "On"; }
+            set { _videoStatus = value; RaisePropertyChangedEvent("videoStatus"); }
+        }
+
 
         ObservableCollection<UserStatus> _userStatus;
         public ObservableCollection<UserStatus> UserStatuses
@@ -454,7 +470,7 @@ namespace LyncWPFApplication3
             }
             if (useThingSpeak)
             {
-                _ts.BaseURL = "http://cacspeak.cloudapp.net";
+                _ts.BaseURL = thingBaseURL;
                 _ts.ChannelID = thingID;
                 _ts.WriteAPI = thingWriteKey;
                 _ts.Content = new Dictionary<int,string> {{1, LightName}};

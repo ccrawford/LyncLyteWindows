@@ -15,12 +15,12 @@ namespace Thingspeak_CAC
         public string WriteAPI;
         public string ReadAPI;
         public string BaseURL;
-        private DateTime lastWrite;
+        //private DateTime lastWrite;
         private TimeSpan apiRate = new TimeSpan(0, 0, 15);
 
 
 
-        private string _response;
+        // private string _response;
 
         public Thingspeak(string channelId, Dictionary<int, string> content, string writeApi)
         {
@@ -66,7 +66,7 @@ namespace Thingspeak_CAC
 
                 }
             }
-            catch (Exception e)
+            catch (Exception )
             {
                 return -1;
             }
@@ -81,7 +81,7 @@ namespace Thingspeak_CAC
                     streamReader.Close();
                 }
             }
-            catch (Exception e)
+            catch (Exception )
             {
                result = "-1";
             }
