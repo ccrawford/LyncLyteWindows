@@ -13,5 +13,15 @@ namespace LyncWPFApplication3
     /// </summary>
     public partial class App : Application
     {
+        /*
+        static System.Threading.Mutex singleton = new System.Threading.Mutex(true, "LyncLyte");
+
+            if (!singleton.WaitOne(TimeSpan.Zero, true))
+            {
+                // Already running
+                Application.Current.Shutdown();
+            }
+        */
+
     }
 }

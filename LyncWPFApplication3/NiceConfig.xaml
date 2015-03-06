@@ -5,15 +5,19 @@
         xmlns:local="clr-namespace:LyncWPFApplication3"
 		xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
         xmlns:dd="clr-namespace:GongSolutions.Wpf.DragDrop;assembly=GongSolutions.Wpf.DragDrop"
-    
+		xmlns:tb="http://www.hardcodet.net/taskbar"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d" 
         x:Class="LyncWPFApplication3.NiceConfig"
+        
     
         Title="{Binding appName}" Height="485" Width="895" Icon="{Binding iconName}" WindowStyle="None" ResizeMode="NoResize" SizeToContent="Width" >
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
         <local:LightToIconFilenameConverter x:Key="LightToIconFilenameConverter" />
+        <local:LightToIcoFilenameConverter x:Key="LightToICOFilenameConverter" />
         <local:StringToResourceConverter x:Key="StringToResourceConverter" />
+        <local:ComStatusToImage x:Key="ComStatusToImageConverter" />
+        <local:ShowWindowCommand x:Key="ShowWindow" />
         <local:GenericBooleanToVisibilityConverter x:Key="USBErrorImageConverter" True="Collapsed" False="Visible" />
         <SolidColorBrush x:Key="TitleBarBrush" Color="#FF323232"/>
         <SolidColorBrush x:Key="WindowBackgroundBrush" Color="#FFA6A6A6"/>
@@ -570,7 +574,7 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="40"/>
                 <ColumnDefinition/>
-                <ColumnDefinition Width="87"/>
+                <ColumnDefinition Width="114"/>
             </Grid.ColumnDefinitions>
             <Image Margin="5,4,0,0" Source="Icons/cc lynclyte logo.png" Grid.Column="0"/>
             <StackPanel Grid.ColumnSpan="2" Grid.Column="1" Margin="16,9,0,0" Orientation="Horizontal">
@@ -578,6 +582,10 @@
                 <TextBlock Text=" Configuration" Foreground="{DynamicResource TitleForegroundBrush}" FontSize="18.667" HorizontalAlignment="Stretch" Background="{x:Null}" Height="31" Visibility="{Binding IsExpanded, ElementName=VisToggle, Converter={StaticResource BooleanToVisibilityConverter}}" Width="688.083"/>
             </StackPanel>
             <StackPanel Grid.Column="2" Margin="10,0,0,0" Orientation="Horizontal">
+                <Button Height="20" VerticalAlignment="Top" Width="30" Background="{x:Null}" Foreground="{DynamicResource TitleForegroundBrush}"
+					Click="HideWindow" FontWeight="Bold" >
+                    <Image Source="Icons/minimize_to_tray.png" />
+                </Button>
                 <Button Height="20" VerticalAlignment="Top" Width="30" Background="{x:Null}" Foreground="{DynamicResource TitleForegroundBrush}"
 					Command="{x:Static SystemCommands.MinimizeWindowCommand}" FontWeight="Bold" >
                     <Image Source="Icons/minimize_window-bar.png" />
@@ -589,5 +597,23 @@
 
             </StackPanel>
         </Grid>
+        <tb:TaskbarIcon x:Name="LLTaskbar" IconSource="{Binding currentLight, Converter={StaticResource LightToICOFilenameConverter}}" ToolTipText="{Binding currentLightColor}" DoubleClickCommand="{StaticResource ShowWindow}">
+            <tb:TaskbarIcon.Resources>
+                
+            </tb:TaskbarIcon.Resources>
+            <tb:TaskbarIcon.TrayPopup>
+                <local:TrayPopUp  StatusText="{Binding currentLightColor}"
+                                  LightImage="{Binding currentLight, Converter={StaticResource LightToIconFilenameConverter}}"
+                                  UsbImage="{Binding IsLinkAvailable, Converter={StaticResource ComStatusToImageConverter}}"
+                                  PopupRestore="MenuItemRestore_Click"
+                                  />
+            </tb:TaskbarIcon.TrayPopup>
+            <tb:TaskbarIcon.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Show Configuration Window" Click="MenuItemRestore_Click"/>
+                    <MenuItem Header="Exit LyncLyte" Click="MenuItemClose_Click"/>
+                </ContextMenu>
+            </tb:TaskbarIcon.ContextMenu>
+        </tb:TaskbarIcon>
     </Grid>
 </Window>

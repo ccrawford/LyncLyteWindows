@@ -1,0 +1,31 @@
+﻿<Window x:Class="LyncWPFApplication3.RemoteSvcs"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="RemoteSvcs" Height="300" Width="420">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40"></RowDefinition>
+            <RowDefinition Height="50*"></RowDefinition>
+            <RowDefinition Height="50*"></RowDefinition>
+        </Grid.RowDefinitions>
+        <Label Grid.Row="0" Content="External Services"/>
+        <StackPanel Grid.Column="0" Grid.Row="1" Orientation="Horizontal">
+            <CheckBox IsChecked="{Binding useDweet}" VerticalAlignment="Center" Margin="0,8">Use Dweet</CheckBox>
+            <Label Padding="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="10,7">Dweet Thing:</Label>
+            <TextBox VerticalAlignment="Center" Width="200" Text="{Binding dweetThingName}" />
+        </StackPanel>
+        <StackPanel Grid.Column="0" Grid.Row="2"  Orientation="Vertical">
+            <StackPanel Orientation="Horizontal">
+                <CheckBox IsChecked="{Binding useThingSpeak}" VerticalAlignment="Center" Margin="0,8">Use ThingSpeak</CheckBox>
+                <Label Padding="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="10,7">ID:</Label>
+                <TextBox VerticalAlignment="Center" Width="50" Text="{Binding thingID}" />
+                <Label Padding="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="10,7">Key:</Label>
+                <TextBox VerticalAlignment="Center" Width="124" Text="{Binding thingWriteKey}" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <Label Padding="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,7">Base URL:</Label>
+                <TextBox VerticalAlignment="Center" Width="240" Text="{Binding thingWriteKey}" />
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</Window>

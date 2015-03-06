@@ -35,11 +35,14 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>Resources\green.ico</ApplicationIcon>
+    <ApplicationIcon>Icons\cc lynclyte logo blue.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="GongSolutions.Wpf.DragDrop">
       <HintPath>..\packages\gong-wpf-dragdrop.0.1.4.3\lib\net40\GongSolutions.Wpf.DragDrop.dll</HintPath>
+    </Reference>
+    <Reference Include="Hardcodet.Wpf.TaskbarNotification">
+      <HintPath>..\packages\Hardcodet.NotifyIcon.Wpf.1.0.5\lib\net45\Hardcodet.Wpf.TaskbarNotification.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Expression.Interactions, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Windows.Interactivity.WPF.2.0.20525\lib\net40\Microsoft.Expression.Interactions.dll</HintPath>
@@ -102,7 +105,11 @@
     <Compile Include="RelayCommand.cs" />
     <Compile Include="SerializePrefs.cs" />
     <Compile Include="Serializer.cs" />
+    <Compile Include="ShowWindowCommand.cs" />
     <Compile Include="StringToResourceConverter.cs" />
+    <Compile Include="TrayPopUp.xaml.cs">
+      <DependentUpon>TrayPopUp.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UserStatus.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -143,6 +150,10 @@
     <Page Include="Simple Styles.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="TrayPopUp.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
   <ItemGroup>
@@ -204,6 +215,18 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Icons\lyncLyteUSBError.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Icons\green.ico" />
+    <Resource Include="Icons\off.ico" />
+    <Resource Include="Icons\red.ico" />
+    <Resource Include="Icons\yellow.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Icons\cc lynclyte logo blue.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Icons\minimize_to_tray.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

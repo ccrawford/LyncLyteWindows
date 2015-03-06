@@ -21,9 +21,11 @@ namespace LyncWPFApplication3
     {
         LyncVM _vm;
 
+        
 
         public NiceConfig()
         {
+
             InitializeComponent();
          //   _vm = (LyncVM)this.DataContext;
 
@@ -65,5 +67,24 @@ namespace LyncWPFApplication3
         {
             SystemCommands.MinimizeWindow(this);
         }
+
+        private void MenuItemClose_Click(object sender, RoutedEventArgs e)
+        {
+            SystemCommands.CloseWindow(this);
+        }
+
+        private void MenuItemRestore_Click(object sender, RoutedEventArgs e)
+        {
+            this.Show();
+            SystemCommands.RestoreWindow(this);
+            this.Activate();
+            LLTaskbar.TrayPopupResolved.IsOpen = false;
+        }
+
+        private void HideWindow(object sender, RoutedEventArgs e)
+        {
+            this.Hide();
+        }
+
     }
 }

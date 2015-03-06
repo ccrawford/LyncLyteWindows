@@ -30,11 +30,30 @@ namespace LyncWPFApplication3
         }
     }
 
+    [ValueConversion(typeof(bool), typeof(string))]
+    public class ComStatusToImage : IValueConverter{
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if ((bool)value) {
+                return "Icons/lyncLyteUSB.png";
+            }
+            else return "Icons/lyncLyteUSBError.png";
+        }
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+ 	        throw new NotImplementedException();
+        }
+    }
+
+
+
     [ValueConversion(typeof(LIGHTS), typeof(string))]
     public class LightToIconFilenameConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
+            if (value == null) return "Icons/ll tube off.png";
+
             switch ((LIGHTS)value)
             {
                 case LIGHTS.RED:
@@ -54,6 +73,32 @@ namespace LyncWPFApplication3
             throw new NotSupportedException();
         }
     }
+
+    [ValueConversion(typeof(LIGHTS), typeof(string))]
+    public class LightToIcoFilenameConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            switch ((LIGHTS)value)
+            {
+                case LIGHTS.RED:
+                    return "Icons/red.ico";
+                case LIGHTS.YELLOW:
+                    return "Icons/yellow.ico";
+                case LIGHTS.GREEN:
+                    return "Icons/green.ico";
+                default:
+                    return "Icons/off.ico";
+            }
+
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            throw new NotSupportedException();
+        }
+    }
+
 
     public class BooleanConverter<T> : IValueConverter
     {
@@ -82,6 +127,7 @@ namespace LyncWPFApplication3
         public GenericBooleanToVisibilityConverter() :
             base(Visibility.Visible, Visibility.Collapsed) { }
     }
+
 
 
 }
