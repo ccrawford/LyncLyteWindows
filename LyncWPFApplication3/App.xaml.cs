@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -13,15 +14,28 @@ namespace LyncWPFApplication3
     /// </summary>
     public partial class App : Application
     {
-        /*
-        static System.Threading.Mutex singleton = new System.Threading.Mutex(true, "LyncLyte");
 
-            if (!singleton.WaitOne(TimeSpan.Zero, true))
+        public App()
+        {
+            InitializeComponent();
+        }
+
+        [STAThread]
+        static void Main()
+        {
+            using (Mutex mutex = new Mutex(false, "ccLyncLyte"))
             {
-                // Already running
-                Application.Current.Shutdown();
-            }
-        */
+                if (!mutex.WaitOne(TimeSpan.Zero, false))
+                {
+                    // Already running
+                    return;
+                }
 
+                NiceConfig niceConfig = new NiceConfig();
+                App app = new App();
+
+                app.Run(niceConfig);
+            }  
+        }
     }
 }
