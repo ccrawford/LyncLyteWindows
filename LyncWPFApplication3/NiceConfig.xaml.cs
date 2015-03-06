@@ -21,19 +21,18 @@ namespace LyncWPFApplication3
     {
         LyncVM _vm;
 
-        
-
         public NiceConfig()
         {
 
             InitializeComponent();
-         //   _vm = (LyncVM)this.DataContext;
 
-         //   _vm.PropertyChanged += _vm_PropertyChanged;
         }
 
+        #region WindowIconManagement
         void _vm_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
+            //Set the current icon based on the light color. Too hard to do in XAML. Just do it here.
+
             if(e.PropertyName == "currentLightColor")        // _vm.currentLightColor
             {
                 this.Dispatcher.Invoke((Action)(() =>
@@ -42,13 +41,17 @@ namespace LyncWPFApplication3
                     }));
             }
         }
+        #endregion
+
+        // Code to manage the window controls (move/min/restore). Too hard to do in pure XAML.
+        #region WindowManagementCommands
 
         private void Grid_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-        	DragMove();
+            DragMove();
         }
-		
-		private void CommandBinding_CanExecute_Close(object sender, CanExecuteRoutedEventArgs e)
+
+        private void CommandBinding_CanExecute_Close(object sender, CanExecuteRoutedEventArgs e)
         {
             e.CanExecute = true;
         }
@@ -84,7 +87,8 @@ namespace LyncWPFApplication3
         private void HideWindow(object sender, RoutedEventArgs e)
         {
             this.Hide();
-        }
+        } 
+        #endregion
 
     }
 }

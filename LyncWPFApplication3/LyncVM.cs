@@ -209,6 +209,7 @@ namespace LyncWPFApplication3
             _userStatus.Add(new UserStatus { StatusName = "Off work", Light = LIGHTS.OFF, LyncStatus = "Off work", MutingMatters = false });
 
             _userStatus.Add(new UserStatus { StatusName = "Default", Light = LIGHTS.OFF, LyncStatus = "Default", MutingMatters = false });
+            _userStatus.Add(new UserStatus { StatusName = null, Light = LIGHTS.OFF, LyncStatus = "[Signed out]", MutingMatters = false });
         }
 
         private bool LoadPrefs()

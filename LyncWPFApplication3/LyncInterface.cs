@@ -63,6 +63,7 @@ namespace LyncWPFApplication3
             try
             {
                 _lyncClient = Microsoft.Lync.Model.LyncClient.GetClient();
+                _lyncClient.StateChanged += _lyncClient_StateChanged;
             }
             catch
             {
@@ -78,7 +79,7 @@ namespace LyncWPFApplication3
                     lyncStatus = "Lync is not signed in.";
                     return;
                     // Add some logic here to handle the not-signed-in state.
-
+                    /*
                     _lyncClient.BeginSignIn(
                         null,
                         null,
@@ -93,6 +94,7 @@ namespace LyncWPFApplication3
                             }
                         },
                         "Local user signing in" as object);
+                     * */
                 }
                 else
                 {
@@ -104,10 +106,16 @@ namespace LyncWPFApplication3
 
         void InitializeClient()
         {
+            /*
             if (_lyncClient == null)
+            {
                 _lyncClient = Microsoft.Lync.Model.LyncClient.GetClient();
+                
+            }
+             * */
 
             _self = _lyncClient.Self;
+
 
             // Necessary to process manual contact state changes.
             _self.Contact.ContactInformationChanged += new EventHandler<ContactInformationChangedEventArgs>(Contact_InformationChanged);
@@ -124,6 +132,19 @@ namespace LyncWPFApplication3
 
             // Mute states have been set. Now you can update lights. Don't move this earlier.
             curPresence = _self.Contact.GetContactInformation(ContactInformationType.Activity).ToString();
+
+        }
+
+        void _lyncClient_StateChanged(object sender, ClientStateChangedEventArgs e)
+        {
+            // Fires when lync signs in/out.
+            Debug.WriteLine("State Changed: " + e.NewState);
+            if (e.NewState == ClientState.SignedIn)
+            {
+                InitializeClient();
+            }
+
+            //CRASH HERE when shutting down Lync.
 
         }
 
