@@ -31,9 +31,9 @@ namespace LyncWPFApplication3
                     return;
                 }
 
-                NiceConfig niceConfig = new NiceConfig();
                 App app = new App();
-
+                NiceConfig niceConfig = new NiceConfig();
+                
                 app.Run(niceConfig);
             }  
         }
