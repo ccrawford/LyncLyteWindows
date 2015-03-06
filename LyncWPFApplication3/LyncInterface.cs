@@ -50,51 +50,62 @@ namespace LyncWPFApplication3
             }
         }
 
-
-
+        public bool lyncClientIsRunning { get; set; }
+        private System.Timers.Timer connectTimer;
 
         public LyncInterface()
         {
-            initializeLyncClient();
+            
+            connectTimer = new System.Timers.Timer(5000);
+            connectTimer.Elapsed += connectTimer_Elapsed;
+            tryToConnectToLync();
         }
 
-        private void initializeLyncClient()
+        void connectTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            Debug.WriteLine("Reconnect Timer...");
+            //Time to retry connecting.
+            if (initializeLyncClient())
+            {
+                Debug.WriteLine("Reconnected!");
+                connectTimer.Enabled = false;
+            }
+        }
+
+        void tryToConnectToLync()
+        {
+            // Initialize the client
+            if (!initializeLyncClient())
+            {
+                // If it fails, try again in a bit.
+                connectTimer.Enabled = true;
+            }
+        }
+
+
+        private bool initializeLyncClient()
         {
             try
             {
                 _lyncClient = Microsoft.Lync.Model.LyncClient.GetClient();
-                _lyncClient.StateChanged += _lyncClient_StateChanged;
+                lyncClientIsRunning = true;
             }
             catch
             {
+                lyncClientIsRunning = false;
                 lyncStatus = "Lync is not running.";
-                return;
+                return false;
             }
 
             if (_lyncClient != null)
             {
+                _lyncClient.StateChanged += _lyncClient_StateChanged;
+                _lyncClient.ClientDisconnected += _lyncClient_ClientDisconnected;
 
                 if (_lyncClient.State != ClientState.SignedIn)
                 {
                     lyncStatus = "Lync is not signed in.";
-                    return;
-                    // Add some logic here to handle the not-signed-in state.
-                    /*
-                    _lyncClient.BeginSignIn(
-                        null,
-                        null,
-                        null,
-                        result =>
-                        {
-                            if (result.IsCompleted)
-                            {
-                                _lyncClient.EndSignIn(result);
-
-                                InitializeClient(); // Setup application logic
-                            }
-                        },
-                        "Local user signing in" as object);
-                     * */
+                    return true;
                 }
                 else
                 {
@@ -102,20 +113,38 @@ namespace LyncWPFApplication3
                     InitializeClient();
                 }
             }
+            return true; 
+        }
+
+
+        void _lyncClient_ClientDisconnected(object sender, EventArgs e)
+        {
+            Debug.WriteLine("Client Disconnected");
+            // _lyncClient = null;
+            lyncClientIsRunning = false;
+
+            // bool noClient = true;
+
+            tryToConnectToLync();
+
+            /*
+            while(noClient)
+            try
+            {
+                noClient = !initializeLyncClient();
+                if (noClient) System.Threading.Thread.Sleep(5000);
+            }
+            catch (Exception)
+            {
+                Debug.WriteLine("trying...");
+            }
+             */
         }
 
         void InitializeClient()
         {
-            /*
-            if (_lyncClient == null)
-            {
-                _lyncClient = Microsoft.Lync.Model.LyncClient.GetClient();
-                
-            }
-             * */
 
             _self = _lyncClient.Self;
-
 
             // Necessary to process manual contact state changes.
             _self.Contact.ContactInformationChanged += new EventHandler<ContactInformationChangedEventArgs>(Contact_InformationChanged);
@@ -144,7 +173,7 @@ namespace LyncWPFApplication3
                 InitializeClient();
             }
 
-            //CRASH HERE when shutting down Lync.
+            //CRASH HERE? when shutting down Lync.
 
         }
 
