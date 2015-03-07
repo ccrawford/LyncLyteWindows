@@ -353,9 +353,9 @@
             <Grid Grid.Column="2" Visibility="{Binding IsExpanded, Converter={StaticResource BooleanToVisibilityConverter}, ElementName=VisToggle}" >
                 <Grid Margin="4,10,10,10" Background="{DynamicResource PanelBackgroundBrush}"  Width="646">
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="39*"/>
-                        <RowDefinition Height="136*"/>
-                        <RowDefinition Height="65"/>
+                        <RowDefinition Height="78*"/>
+                        <RowDefinition Height="337*"/>
+                        <RowDefinition Height="0"/>
                     </Grid.RowDefinitions>
                     <TabControl Style="{DynamicResource TabStyle}" Margin="10" Grid.RowSpan="2">
                         <TabItem Header="Color Assignment" FontWeight="Bold" Style="{DynamicResource FatTabStyle}" TabIndex="1">
@@ -523,6 +523,9 @@
                                     <RadioButton Style="{StaticResource {x:Type ToggleButton}}" Content="Off"  GroupName="Manual" 
 										Template="{DynamicResource ToggleButtonCac}"
 										Command="{Binding TestLight}" CommandParameter="OFF" IsEnabled="{Binding IsLinkAvailable}"/>
+                                    <RadioButton Style="{StaticResource {x:Type ToggleButton}}" Content="Cycle"  GroupName="Manual" 
+										Template="{DynamicResource ToggleButtonCac}"
+										Command="{Binding TestLight}" CommandParameter="CYCLE" IsEnabled="{Binding IsLinkAvailable}"/>
                                     <RadioButton Style="{StaticResource {x:Type ToggleButton}}" Content="Lync" Margin="0,20,0,0" GroupName="Manual" 
 										Template="{DynamicResource ToggleButtonCac}" IsChecked="True"
 										Command="{Binding TestLight}" CommandParameter="UNKNOWN" IsEnabled="{Binding IsLinkAvailable}"/>
@@ -599,7 +602,7 @@
         </Grid>
         <tb:TaskbarIcon x:Name="LLTaskbar" IconSource="{Binding currentLight, Converter={StaticResource LightToICOFilenameConverter}}" ToolTipText="{Binding currentLightColor}" DoubleClickCommand="{StaticResource ShowWindow}">
             <tb:TaskbarIcon.Resources>
-                
+
             </tb:TaskbarIcon.Resources>
             <tb:TaskbarIcon.TrayPopup>
                 <local:TrayPopUp  StatusText="{Binding currentLightColor}"

@@ -29,6 +29,8 @@ namespace LyncWPFApplication3
         private DweetNet _dweet;
         private Thingspeak _ts;
 
+        System.Timers.Timer cycleLight = new System.Timers.Timer(2000);
+
         public LyncVM()
         {
             // Set the user's preferences from the pref file.
@@ -42,6 +44,9 @@ namespace LyncWPFApplication3
             _userStatus = new ObservableCollection<UserStatus>();
             // _userStatus.CollectionChanged += _userStatus_CollectionChanged;
             LoadPrefs();
+
+            cycleLight.Elapsed += cycleLight_Elapsed;
+            cycleLight.AutoReset = true;
 
             _dweet = new DweetNet(dweetThingName, null);
             _ts = new Thingspeak();
@@ -68,6 +73,8 @@ namespace LyncWPFApplication3
 
         }
 
+        
+
         // removed the this's
         private void PutStatusInLightBucket(UserStatus s)
         {
@@ -83,9 +90,6 @@ namespace LyncWPFApplication3
                     App.Current.Dispatcher.Invoke((Action)delegate { greenLights.userStatuses.Add(s); });
                     break;
                 case LIGHTS.OFF:
-                    App.Current.Dispatcher.Invoke((Action)delegate { offLights.userStatuses.Add(s); });
-                    break;
-                case LIGHTS.STATUS:
                     App.Current.Dispatcher.Invoke((Action)delegate { offLights.userStatuses.Add(s); });
                     break;
                 default:
@@ -500,8 +504,6 @@ namespace LyncWPFApplication3
                         return "Green";
                     case LIGHTS.OFF:
                         return "Off";
-                    case LIGHTS.STATUS:
-                        return "Status";
                     default:
                         return "Not Set";
                 }
@@ -596,7 +598,10 @@ namespace LyncWPFApplication3
         void TestLightExecute(object state)
         {
             LIGHTS newLight;
+            
+            
             if (state == null) PresenceToLight(_lync.curPresence);
+            if (state.ToString() == "CYCLE") cycleLight.Enabled = true; else cycleLight.Enabled = false;
             if (Enum.TryParse(state.ToString(), out newLight)) currentLight = newLight;
             else PresenceToLight(_lync.curPresence);
         }
@@ -613,6 +618,18 @@ namespace LyncWPFApplication3
                 return _TestLight;
             }
         }
+
+
+        int curTestLightIndex = 0;
+        void cycleLight_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            LIGHTS newLight;
+            string[] colors = Enum.GetNames(typeof(LIGHTS));
+            if (curTestLightIndex >= colors.Length) curTestLightIndex = 0;
+            currentLight = (LIGHTS)Enum.Parse(typeof(LIGHTS), colors[curTestLightIndex++]);
+            
+        }
+
 
         void DeleteItemExecute(object state)
         {

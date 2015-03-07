@@ -11,7 +11,8 @@ namespace LyncLights
         RED = 6,
         YELLOW = 5,
         GREEN = 4,
-        OFF = 7,
-        STATUS = 8
+        OFF = 7
+            // ,
+        // STATUS = 8
     }
 }

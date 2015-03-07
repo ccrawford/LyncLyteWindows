@@ -291,8 +291,6 @@ namespace LyncWPFApplication3
                         return "Green";
                     case LIGHTS.OFF:
                         return "Off";
-                    case LIGHTS.STATUS:
-                        return "Status";
                     default:
                         return "Not Set";
                 }
