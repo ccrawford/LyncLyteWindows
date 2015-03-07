@@ -19,7 +19,7 @@ namespace LyncWPFApplication3
     /// </summary>
     public partial class NiceConfig : Window
     {
-        LyncVM _vm;
+        //LyncVM _vm;
 
         public NiceConfig()
         {
@@ -27,7 +27,7 @@ namespace LyncWPFApplication3
             InitializeComponent();
 
         }
-
+        /*
         #region WindowIconManagement
         void _vm_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
@@ -42,6 +42,7 @@ namespace LyncWPFApplication3
             }
         }
         #endregion
+        */
 
         // Code to manage the window controls (move/min/restore). Too hard to do in pure XAML.
         #region WindowManagementCommands

@@ -200,11 +200,11 @@ namespace LyncWPFApplication3
             else CreateDefaultStatuses();
 
 
-            if (prefs.UseDweet != null) useDweet = prefs.UseDweet;
+            useDweet = prefs.UseDweet;
             if (prefs.DweetThingName != null) dweetThingName = prefs.DweetThingName;
             
-            if (prefs.ShowConfig != null) showConfig = prefs.ShowConfig;
-            if (prefs.UseThing != null) useThingSpeak = prefs.UseThing;
+            showConfig = prefs.ShowConfig;
+            useThingSpeak = prefs.UseThing;
             if (prefs.ThingBaseURL != null) thingBaseURL = prefs.ThingBaseURL;
             if (prefs.ThingID != null) thingID = prefs.ThingID;
             if (prefs.ThingWriteKey != null) thingWriteKey = prefs.ThingWriteKey;
@@ -262,7 +262,7 @@ namespace LyncWPFApplication3
             }
         }
 
-        private bool _showConfig;
+        private bool _showConfig = true;
         public bool showConfig
         {
             get { return _showConfig; }
@@ -563,7 +563,6 @@ namespace LyncWPFApplication3
         int curTestLightIndex = 0;
         void cycleLight_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
-            LIGHTS newLight;
             string[] colors = Enum.GetNames(typeof(LIGHTS));
             if (curTestLightIndex >= colors.Length) curTestLightIndex = 0;
             currentLight = (LIGHTS)Enum.Parse(typeof(LIGHTS), colors[curTestLightIndex++]);
