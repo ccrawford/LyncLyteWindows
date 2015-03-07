@@ -143,16 +143,6 @@ namespace LyncWPFApplication3
             }
             else CreateDefaultStatuses();
 
-            /*
-            if (prefs != null && prefs.ComPort != null)
-            {
-                ComPort = prefs.ComPort;
-            }
-            else ComPort = "COM5";
-
-            _comPorts = new ObservableCollection<string>(SerialPort.GetPortNames());
-            */
-
             return true;
         }
 
@@ -161,7 +151,6 @@ namespace LyncWPFApplication3
             // Save Prefs
             SerializePrefs prefs = new SerializePrefs();
             prefs.Statuses = UserStatuses;
-            // prefs.ComPort = ComPort;
             Serializer serializer = new Serializer();
             serializer.SerializeObject(prefs);
         }
@@ -318,33 +307,6 @@ namespace LyncWPFApplication3
                 UserStatuses.Add(new UserStatus { LyncStatus = presence, StatusName = presence, Light = LIGHTS.OFF, AudioMuted = false, VideoMuted = false });
             }
         }
-
-        private string _comPort { get; set; }
-        public string ComPort
-        {
-            get { return _comPort; }
-            set
-            {
-                _comPort = value;
-                RaisePropertyChangedEvent("ComPort");
-            }
-        }
-
-
-        private ObservableCollection<string> _comPorts = new ObservableCollection<String>();
-        public ObservableCollection<string> ComPorts
-        {
-            get
-            {
-                return _comPorts;
-            }
-            set
-            {
-                _comPorts = value;
-                RaisePropertyChangedEvent("ComPorts");
-            }
-        }
-
 
         public string _comLinkStatus;
         public string comLinkStatus

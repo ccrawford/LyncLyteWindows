@@ -156,41 +156,6 @@ namespace LyncWPFApplication3
         public LightCollection greenLights { get; set; }
         public LightCollection offLights { get; set; }
 
-        //void comm_PortsChanged(object sender, PortsChangedArgs e)
-        //{
-        //    comLinkStatus = "New port found";
-        //    ComPorts = new System.Collections.ObjectModel.ObservableCollection<string>(e.SerialPorts);
-        //}
-
-
-        //void comm_CommStatusChanged(object sender, CommStatusChanagedEventArgs e)
-        //{
-        //    Debug.WriteLine("Comm stataus changed: " + e.NewStatus.ToString());
-        //    ProcessComStatus(e.NewStatus);
-        //}
-
-        //void ProcessComStatus(COM_STATUS curStatus)
-        //{
-        //    switch (curStatus)
-        //    {
-        //        case COM_STATUS.Connected:
-        //            comLinkStatus = "Connected";
-        //            break;
-        //        case COM_STATUS.Disconnected:
-        //            comLinkStatus = "Disconnected";
-        //            break;
-        //        case COM_STATUS.BadPort:
-        //            comLinkStatus = "Check Port selection";
-        //            break;
-        //        case COM_STATUS.NotDetermined:
-        //            comLinkStatus = "Checking...";
-        //            break;
-        //        default:
-        //            comLinkStatus = "Com Status unknown.";
-        //            break;
-        //    }
-        //}
-
         #region Preferences
 
         public void CreateDefaultStatuses()
@@ -213,7 +178,7 @@ namespace LyncWPFApplication3
             _userStatus.Add(new UserStatus { StatusName = "Off work", Light = LIGHTS.OFF, LyncStatus = "Off work", MutingMatters = false });
 
             _userStatus.Add(new UserStatus { StatusName = "Default", Light = LIGHTS.OFF, LyncStatus = "Default", MutingMatters = false });
-            _userStatus.Add(new UserStatus { StatusName = null, Light = LIGHTS.OFF, LyncStatus = "[Signed out]", MutingMatters = false });
+            _userStatus.Add(new UserStatus { StatusName = null, Light = LIGHTS.OFF, LyncStatus = "[Lync Unavailable]", MutingMatters = false });
         }
 
         private bool LoadPrefs()
@@ -235,19 +200,11 @@ namespace LyncWPFApplication3
             }
             else CreateDefaultStatuses();
 
-/*            
- *          if (prefs.ComPort != null)
-            {
-                ComPort = prefs.ComPort;
-            }
-            else ComPort = "COM5";
 
-            // _comPorts = new ObservableCollection<string>(SerialPort.GetPortNames());
-            
- */
             if (prefs.UseDweet != null) useDweet = prefs.UseDweet;
             if (prefs.DweetThingName != null) dweetThingName = prefs.DweetThingName;
-
+            
+            if (prefs.ShowConfig != null) showConfig = prefs.ShowConfig;
             if (prefs.UseThing != null) useThingSpeak = prefs.UseThing;
             if (prefs.ThingBaseURL != null) thingBaseURL = prefs.ThingBaseURL;
             if (prefs.ThingID != null) thingID = prefs.ThingID;
@@ -261,8 +218,8 @@ namespace LyncWPFApplication3
             // Save Prefs
             SerializePrefs prefs = new SerializePrefs();
             prefs.Statuses = UserStatuses;
-            prefs.ComPort = ComPort;
             prefs.DweetThingName = dweetThingName;
+            prefs.ShowConfig = showConfig;
             prefs.UseDweet = useDweet;
             prefs.ThingID = thingID;
             prefs.UseThing = useThingSpeak;
@@ -303,6 +260,17 @@ namespace LyncWPFApplication3
             set { 
                 _useDweet = value;
                 RaisePropertyChangedEvent("useDweet");
+            }
+        }
+
+        private bool _showConfig;
+        public bool showConfig
+        {
+            get { return _showConfig; }
+            set
+            {
+                _showConfig = value;
+                RaisePropertyChangedEvent("showConfig");
             }
         }
 
@@ -546,33 +514,6 @@ namespace LyncWPFApplication3
                 PutStatusInLightBucket(s);
             }
         }
-
-        private string _comPort { get; set; }
-        public string ComPort
-        {
-            get { return _comPort; }
-            set
-            {
-                _comPort = value;
-                RaisePropertyChangedEvent("ComPort");
-            }
-        }
-
-
-        private ObservableCollection<string> _comPorts = new ObservableCollection<String>();
-        public ObservableCollection<string> ComPorts
-        {
-            get
-            {
-                return _comPorts;
-            }
-            set
-            {
-                _comPorts = value;
-                RaisePropertyChangedEvent("ComPorts");
-            }
-        }
-
 
         public string comLinkStatus
         {

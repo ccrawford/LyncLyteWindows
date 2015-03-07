@@ -559,7 +559,7 @@
                 </Grid>
             </Grid>
             <StackPanel Grid.Column="1" Margin="0,10,0,0" Orientation="Vertical">
-                <Expander x:Name="VisToggle" VerticalAlignment="Top" ExpandDirection="Right" IsExpanded="True" Width="25"  />
+                <Expander x:Name="VisToggle" VerticalAlignment="Top" ExpandDirection="Right" IsExpanded="{Binding showConfig}" Width="25"  />
                 <TextBlock Foreground="{DynamicResource TitleBarBrush}" Text="Settings" HorizontalAlignment="Center" VerticalAlignment="Top" >
                     <TextBlock.LayoutTransform>
                         <TransformGroup>
