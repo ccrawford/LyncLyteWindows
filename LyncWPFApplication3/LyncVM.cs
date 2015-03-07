@@ -23,7 +23,6 @@ namespace LyncWPFApplication3
     class LyncVM : ObservableObject, IDropTarget
     {
 
-        // private LyncComm _comm;
         private LyncUSB _usb;
         private LyncInterface _lync;
         private DweetNet _dweet;
