@@ -7,8 +7,8 @@ namespace LyncWPFApplication3
 
     public class Serializer
     {
-        static string PrefsFileName = "LyncLightPref.dat";
-
+        static string PrefsFileName = System.Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData) + System.IO.Path.DirectorySeparatorChar + "LyncLightPref.dat";
+        
         public Serializer()
         {
         }

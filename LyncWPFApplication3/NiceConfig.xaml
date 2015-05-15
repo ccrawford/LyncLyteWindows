@@ -340,14 +340,14 @@
                         </StackPanel>
                     </StackPanel>
                     <Rectangle Fill="{DynamicResource TitleBarBrush}" HorizontalAlignment="Left" Height="30" VerticalAlignment="Top" Stretch="UniformToFill" Width="180"/>
-                    <Image HorizontalAlignment="Left" Margin="10,29,0,0" VerticalAlignment="Top" Width="80" Source="Icons/lyncLyteUSB.png" Height="60" Grid.Row="1" Visibility="{Binding IsLinkAvailable, Converter={StaticResource BooleanToVisibilityConverter} }"/>
-                    <Image HorizontalAlignment="Left" Margin="10,29,0,0" VerticalAlignment="Top" Width="80" Source="Icons/lyncLyteUSBError.png" Height="60" Grid.Row="1" Visibility="{Binding IsLinkAvailable, Converter={StaticResource USBErrorImageConverter} }"/>
+                    <Image HorizontalAlignment="Left" Margin="10,29,0,0" VerticalAlignment="Top" Width="80" ToolTip="USB Dongle connected." Source="Icons/lyncLyteUSB.png" Height="60" Grid.Row="1" Visibility="{Binding IsLinkAvailable, Converter={StaticResource BooleanToVisibilityConverter} }"/>
+                    <Image HorizontalAlignment="Left" Margin="10,29,0,0" VerticalAlignment="Top" Width="80" ToolTip="USB Dongle not connected. Please reconnect." Source="Icons/lyncLyteUSBError.png" Height="60" Grid.Row="1" Visibility="{Binding IsLinkAvailable, Converter={StaticResource USBErrorImageConverter} }"/>
 
                     <StackPanel Margin="1,2,10,4.737" Orientation="Horizontal" Grid.Row="0">
                         <Image HorizontalAlignment="Left" Height="20" VerticalAlignment="Top" Width="20" Source="Icons/usb icon.png" Margin="0,2,0,0"/>
                         <TextBlock HorizontalAlignment="Left" Height="25" Margin="7,3,0,0" TextWrapping="Wrap" Text="Device Status" VerticalAlignment="Top" Width="130" Foreground="{DynamicResource TitleForegroundBrush}" FontSize="14.667"/>
                     </StackPanel>
-                    <Image HorizontalAlignment="Left" Height="121" Margin="90,26,0,0" VerticalAlignment="Top" Width="90" Source="{Binding currentLight, Converter={StaticResource LightToIconFilenameConverter}}" Grid.RowSpan="3"/>
+                    <Image HorizontalAlignment="Left" Height="121" Margin="90,26,0,0" VerticalAlignment="Top" Width="90" ToolTip="{Binding currentLightColor}" Source="{Binding currentLight, Converter={StaticResource LightToIconFilenameConverter}}" Grid.RowSpan="3"/>
                 </Grid>
             </Grid>
             <Grid Grid.Column="2" Visibility="{Binding IsExpanded, Converter={StaticResource BooleanToVisibilityConverter}, ElementName=VisToggle}" >
@@ -358,7 +358,7 @@
                         <RowDefinition Height="0"/>
                     </Grid.RowDefinitions>
                     <TabControl Style="{DynamicResource TabStyle}" Margin="10" Grid.RowSpan="2">
-                        <TabItem Header="Color Assignment" FontWeight="Bold" Style="{DynamicResource FatTabStyle}" TabIndex="1">
+                        <TabItem Header="Color Assignment" FontWeight="Bold" Style="{DynamicResource FatTabStyle}" TabIndex="1" ToolTip="Assign LyncLyte colors to Lync Status">
                             <Grid Background="#FFE5E5E5">
                                 <Grid.Resources>
                                     <DataTemplate x:Key="CustomTemplate">
@@ -432,7 +432,7 @@
 
                             </Grid>
                         </TabItem>
-                        <TabItem Header="Dweet.io" FontWeight="Bold" Style="{DynamicResource FatTabStyle}" TabIndex="3">
+                        <TabItem Header="Dweet.io" FontWeight="Bold" Style="{DynamicResource FatTabStyle}" TabIndex="3" ToolTip="IoT integration through Dweet">
                             <Grid Background="{DynamicResource PanelBackgroundBrush}">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="21"/>
@@ -446,7 +446,7 @@
                                 </StackPanel>
                             </Grid>
                         </TabItem>
-                        <TabItem Header="ThingSpeak" FontWeight="Bold" Style="{DynamicResource FatTabStyle}" TabIndex="4">
+                        <TabItem Header="ThingSpeak" FontWeight="Bold" Style="{DynamicResource FatTabStyle}" TabIndex="4" ToolTip="IoT integration through ThingSpeak">
                             <Grid Background="{DynamicResource PanelBackgroundBrush}">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="36"/>
@@ -466,7 +466,7 @@
                             </Grid>
                         </TabItem>
 
-                        <TabItem Header="Manual Control" FontWeight="Bold" Style="{DynamicResource FatTabStyle}" TabIndex="2">
+                        <TabItem Header="Manual Control" FontWeight="Bold" Style="{DynamicResource FatTabStyle}" TabIndex="2" ToolTip="Set LyncLyte color manually">
                             <Grid Background="{DynamicResource PanelBackgroundBrush}">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="8*"/>
@@ -532,7 +532,7 @@
                                 </StackPanel>
                             </Grid>
                         </TabItem>
-                        <TabItem Header="About" FontWeight="Bold" Style="{DynamicResource FatTabStyle}" TabIndex="5">
+                        <TabItem Header="About" FontWeight="Bold" Style="{DynamicResource FatTabStyle}" TabIndex="5" ToolTip="Information about LyncLyte">
                             <Grid>
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="31"/>
@@ -586,14 +586,17 @@
             </StackPanel>
             <StackPanel Grid.Column="2" Margin="10,0,0,0" Orientation="Horizontal">
                 <Button Height="20" VerticalAlignment="Top" Width="30" Background="{x:Null}" Foreground="{DynamicResource TitleForegroundBrush}"
+                        ToolTip="Minimize to Tray"
 					Click="HideWindow" FontWeight="Bold" >
                     <Image Source="Icons/minimize_to_tray.png" />
                 </Button>
                 <Button Height="20" VerticalAlignment="Top" Width="30" Background="{x:Null}" Foreground="{DynamicResource TitleForegroundBrush}"
+                        ToolTip="Minimize to taskbar"
 					Command="{x:Static SystemCommands.MinimizeWindowCommand}" FontWeight="Bold" >
                     <Image Source="Icons/minimize_window-bar.png" />
                 </Button>
                 <Button Height="20" VerticalAlignment="Top" Width="30" Background="{x:Null}" Foreground="{DynamicResource TitleForegroundBrush}"
+                        ToolTip="Close Application"
 					Command="{x:Static SystemCommands.CloseWindowCommand}" >
                     <Image Source="Icons/close_window-x.png" />
                 </Button>

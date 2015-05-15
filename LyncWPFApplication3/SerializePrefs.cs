@@ -33,7 +33,7 @@ namespace LyncWPFApplication3
             {
                 switch (entry.Name)
                 {
-                    case "Statuses":
+                    case "UserStatus":
                         this.Statuses = (ObservableCollection<UserStatus>)info.GetValue("UserStatus", typeof(ObservableCollection<UserStatus>));
                         break;
                     case "LastSaved":
